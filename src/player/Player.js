@@ -12,8 +12,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.inventory = {
       lifeEnergyBlock: 1,
       life: 100,
-      savedPositionX: null,
-      savedPositionY: null,
+      savedPositionX: 600,
+      savedPositionY: 300,
+      map: 'map1',
       selectableWeapon: ['bullet'],
       gun: false,
       bulletDamage: 5,
@@ -27,7 +28,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       morphing: false,
       morphingBomb: false,
       morphingSonar: false,
-      jumpBooster: false,
+      jumpBooster: true,
+      speedBooster: true,
       boss1: false,
       bossFinal: false,
       rhino: false,
@@ -59,16 +61,21 @@ export default class Player extends Phaser.GameObjects.Sprite {
       rhinoCount: 0,
       e: 0,
       d: 0,
+      colorChange: false,
+      SuperPowersActive: false,
     };
 
     this.onWater = false;
     this.jumpCooldownTimer = null;
+    this.isSpeedRunningTimer = null;
+    this.onSpeedRunning = 0;
     this.boostTimer = null;
     this.bombTimer = null;
     this.lavaOverlap = false;
     this.selectWeaponFlag = false;
     this.chooseDone = false;
     this.setDepth(105);
+    this.setPipeline('Light2D');
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
 
@@ -104,7 +111,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       },
     );
     this.scene.input.keyboard.on('keycombomatch', (keyCombo) => {
-      if (keyCombo.keyCodes[0] === this.keys.down.keyCode && keyCombo.keyCodes[1] === this.keys.down.keyCode) {
+      if (keyCombo.keyCodes[0] === this.keys.down.keyCode && keyCombo.keyCodes[1] === this.keys.down.keyCode && !this.body.touching.down) {
         morph = true;
         if (this.inventory.morphing) {
           this.scene.sound.play('morph', { volume: 0.3 });
@@ -114,24 +121,41 @@ export default class Player extends Phaser.GameObjects.Sprite {
         jumpB = true;
       }
     });
+    const arrEmit = [];
+    for (let i = 0; i < 31; i += 1) {
+      arrEmit.push(i.toString());
+    }
+    this.playerGhostParticles = this.scene.add.particles('player').setDepth(99);
+    this.playerGhostEmitter = this.playerGhostParticles.createEmitter({
+      speed: this.body.velocity.x,
+      quantity: 1,
+      frame: { frames: arrEmit, cycle: false },
+      alpha: { start: 0.7, end: 0 },
+      rotate: 0,
+      gravityY: 0,
+      on: false,
+      active: true,
+    });
   }
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-    const { keys } = this;
+    const {
+      body, keys, state, inventory,
+    } = this;
     let animationName;
     // if not game pause
-    if (!this.state.pause && !this.state.dead) {
+    if (!state.pause && !state.dead) {
       // check morphing ball ability active
-      if (this.inventory.morphing) {
+      if (inventory.morphing) {
         this.state.onMorphingBall = morph;
       }
       // check jumpBooster ability active
-      if (this.inventory.jumpBooster) {
+      if (inventory.jumpBooster) {
         this.state.jumpBoost = jumpB;
       }
       // check jumpBoost
-      if (this.body.blocked.down && this.state.jumpBoost) {
+      if (body.blocked.down && state.jumpBoost) {
         this.jumpBoosterTimer();
       }
       // fire Y orientation
@@ -140,8 +164,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       } else {
         this.state.bulletOrientationY = 'normal';
       }
-      if (keys.up.isDown && this.state.onMorphingBall && this.scene.solLayer.getTileAtWorldXY(this.body.x + 6, this.body.y - 16, true)) {
-        if (!this.scene.solLayer.getTileAtWorldXY(this.body.x + 6, this.body.y - 16, true).properties.collides) {
+      if (keys.up.isDown && state.onMorphingBall && this.scene.solLayer.getTileAtWorldXY(body.x + 6, body.y - 16, true) && !body.touching.down) {
+        if (!this.scene.solLayer.getTileAtWorldXY(body.x + 6, body.y - 16, true).properties.collides) {
           this.state.bulletOrientationY = 'up';
           this.state.onMorphingBall = false;
           morph = false;
@@ -153,105 +177,128 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.shoot(time);
       }
       // player movement
-      // marche vers la gauche
-      if (keys.left.isDown && !keys.run.isDown && !this.state.onMorphingBall) {
-        this.body.setVelocityX(-this.state.speed);
-        this.state.bulletOrientationX = 'left';
-        if (keys.jump.isDown && !this.body.blocked.down) {
-          animationName = 'jump';
-        } else {
-          animationName = 'walkShoot';
-        }
-        this.body.setSize(10, 35, true);
-        // marche vers la droite
-      } else if (keys.right.isDown && !keys.run.isDown && !this.state.onMorphingBall) {
-        this.body.setVelocityX(this.state.speed);
-        this.state.bulletOrientationX = 'right';
-        if (keys.jump.isDown && !this.body.blocked.down) {
-          animationName = 'jump';
-        } else {
-          animationName = 'walkShoot';
-        }
-        this.body.setSize(10, 35, true);
-        // cours vers la gauche
-      } else if (keys.left.isDown && keys.run.isDown && !this.state.onMorphingBall) {
-        this.body.setVelocityX(-this.state.speed);
-        this.state.bulletOrientationX = 'left';
-        if (keys.jump.isDown && !this.body.blocked.down) {
-          animationName = 'jump';
-        } else {
-          animationName = 'runShoot';
-        }
-        this.body.setSize(10, 35, true);
-        // cours vers la droite
-      } else if (keys.right.isDown && keys.run.isDown && !this.state.onMorphingBall) {
-        this.body.setVelocityX(this.state.speed);
-        this.state.bulletOrientationX = 'right';
-        if (keys.jump.isDown && !this.body.blocked.down) {
-          animationName = 'jump';
-        } else {
-          animationName = 'runShoot';
-        }
-        this.body.setSize(10, 35, true);
-        // saut droit et chute libre
-      } else if (!this.body.blocked.down
-        && !(keys.left.isDown || keys.right.isDown)
-        && !this.state.onMorphingBall
-        && !this.state.jumpBoost
-        && !this.body.touching.down) {
-        animationName = 'jumpVertical';
-        this.body.setVelocityX(0);
-        this.ComboJumpBooster.enabled = false;
-        // saut avec booster
-      } else if (this.state.jumpBoost
-        && !(keys.left.isDown || keys.right.isDown)
-        && !this.state.onMorphingBall) {
-        animationName = 'jumpBoost';
-        // position baissée
-      } else if (keys.down.isDown && !this.state.onMorphingBall && !(keys.left.isDown || keys.right.isDown)) {
-        this.body.setVelocityX(0);
-        this.state.bulletPositionY = 10;
-        animationName = 'duck';
-        this.body.velocity.y = -0.5;
-        this.body.setSize(10, 23, 8, 10);
-        // morphing ball
-      } else if (this.state.onMorphingBall) {
-        animationName = 'morphingBall';
-        this.body.setSize(10, 10, true);
-        this.body.setOffset(15, 22);
-        if (!(keys.left.isDown || keys.right.isDown)) {
-          if (this.lastAnim !== 'morphingBall') {
-            animationName = 'morphingBallIdle';
-          }
-          this.body.setVelocityX(0);
-          if (this.anims.isPlaying) {
-            this.anims.pause(this.anims.currentFrame);
-          }
-        } else if (keys.left.isDown) {
-          this.body.setVelocityX(-this.state.morphingSpeed);
+      switch (true) {
+        case (keys.left.isDown && !keys.run.isDown && !state.onMorphingBall):
+        // marche vers la gauche
+          this.body.setVelocityX(-this.state.speed);
           this.state.bulletOrientationX = 'left';
-          this.anims.resume(this.anims.currentFrame);
-        } else if (keys.right.isDown) {
-          this.body.setVelocityX(this.state.morphingSpeed);
+          if (keys.jump.isDown && !body.blocked.down) {
+            animationName = 'jump';
+          } else {
+            animationName = 'playerRun';
+          }
+          this.body.setSize(10, 35, true);
+          break;
+        case (keys.right.isDown && !keys.run.isDown && !state.onMorphingBall):
+        // marche vers la droite
+          this.body.setVelocityX(this.state.speed);
           this.state.bulletOrientationX = 'right';
-          this.anims.resume(this.anims.currentFrame);
-        }
-        this.state.bulletPositionY = 10;
+          if (keys.jump.isDown && !body.blocked.down) {
+            animationName = 'jump';
+          } else {
+            animationName = 'playerRun';
+          }
+          this.body.setSize(10, 35, true);
+          break;
+        case (keys.left.isDown && keys.run.isDown && !state.onMorphingBall):
+        // cours vers la gauche
+          this.body.setVelocityX(-this.state.speed);
+          this.state.bulletOrientationX = 'left';
+          if (keys.jump.isDown && !body.blocked.down) {
+            animationName = 'jump';
+          } else {
+            animationName = 'playerRun';
+          }
+          this.body.setSize(10, 35, true);
+          break;
+        case (keys.right.isDown && keys.run.isDown && !state.onMorphingBall):
+        // cours vers la droite
+          this.body.setVelocityX(this.state.speed);
+          this.state.bulletOrientationX = 'right';
+          if (keys.jump.isDown && !body.blocked.down) {
+            animationName = 'jump';
+          } else {
+            animationName = 'playerRun';
+          }
+          this.body.setSize(10, 35, true);
+          break;
+        case (!body.blocked.down
+        && !(keys.left.isDown || keys.right.isDown)
+        && !state.onMorphingBall
+        && !state.jumpBoost
+        && !body.touching.down
+        && !state.SuperPowersActive):
+        // saut droit et chute libre
+          animationName = 'jumpVertical';
+          this.body.setVelocityX(0);
+          this.ComboJumpBooster.enabled = false;
+          break;
+        case (state.jumpBoost
+        && !(keys.left.isDown || keys.right.isDown)
+        && !state.onMorphingBall):
+        // saut avec booster
+          animationName = 'jumpBoost';
+          break;
+        case (!body.blocked.down
+        // super power jump vertical
+        && !(keys.left.isDown || keys.right.isDown)
+        && !state.onMorphingBall
+        && !state.jumpBoost
+        && !body.touching.down
+        && state.SuperPowersActive):
+          animationName = 'jumpBoost';
+          break;
+        case (keys.down.isDown && !state.onMorphingBall && !body.touching.down && !(keys.left.isDown || keys.right.isDown)):
+        // position baissée
+          this.body.setVelocityX(0);
+          this.state.bulletPositionY = 10;
+          animationName = 'duck';
+          this.body.velocity.y = -0.5;
+          this.body.setSize(10, 23, 8, 10);
+          break;
+        case (state.onMorphingBall):
+        // morphing ball
+          animationName = 'morphingBall';
+          this.body.setSize(10, 10, true);
+          this.body.setOffset(15, 22);
+          if (!(keys.left.isDown || keys.right.isDown)) {
+            if (this.lastAnim !== 'morphingBall') {
+              animationName = 'morphingBallIdle';
+            }
+            this.body.setVelocityX(0);
+            if (this.anims.isPlaying) {
+              this.anims.pause(this.anims.currentFrame);
+            }
+          } else if (keys.left.isDown) {
+            this.body.setVelocityX(-this.state.morphingSpeed);
+            this.state.bulletOrientationX = 'left';
+            this.anims.resume(this.anims.currentFrame);
+          } else if (keys.right.isDown) {
+            this.body.setVelocityX(this.state.morphingSpeed);
+            this.state.bulletOrientationX = 'right';
+            this.anims.resume(this.anims.currentFrame);
+          }
+          this.state.bulletPositionY = 10;
+          break;
+        case (keys.fire.isDown && keys.up.isDown && !(keys.left.isDown || keys.right.isDown)):
         // tire vers le haut
-      } else if (keys.fire.isDown && keys.up.isDown && !(keys.left.isDown || keys.right.isDown)) {
-        animationName = 'shootup';
-        this.body.setVelocityX(0);
+          animationName = 'shootup';
+          this.body.setVelocityX(0);
+          break;
+        case (keys.fire.isDown && !keys.up.isDown && !(keys.left.isDown || keys.right.isDown)):
         // tire a l'arret
-      } else if (keys.fire.isDown && !keys.up.isDown && !(keys.left.isDown || keys.right.isDown)) {
-        this.state.bulletPositionY = 8;
-        animationName = 'stand';
-        this.body.setVelocityX(0);
-        this.body.setSize(10, 35, true);
+          this.state.bulletPositionY = 8;
+          animationName = 'stand';
+          this.body.setVelocityX(0);
+          this.body.setSize(10, 35, true);
+          this.state.runSpeed = 285;
+          break;
+        default:
         // reste immobile
-      } else {
-        this.body.setVelocityX(0);
-        animationName = 'stand';
-        this.body.setSize(10, 35, true);
+          this.body.setVelocityX(0);
+          animationName = 'stand';
+          this.body.setSize(10, 35, true);
+          this.state.runSpeed = 285;
       }
       // positionne la hauteur du tir en marchant //ptet en courant aussi a verifier
       if (!keys.down.isDown && (keys.left.isDown || keys.right.isDown)) {
@@ -259,71 +306,114 @@ export default class Player extends Phaser.GameObjects.Sprite {
       }
       //  PLAYER JUMP    ////
       // peut sauter
-      if (!keys.jump.isDown && this.body.blocked.down) {
+      if (!keys.jump.isDown && body.blocked.down) {
         this.state.canJump = true;
         this.state.stopJump = false;
       }
       // saute
-      if (keys.jump.isDown && this.body.blocked.down && this.state.canJump) {
-        this.body.setVelocityY(-this.state.speed);
-        this.body.velocity.normalize().scale(this.state.maxSpeed);
+      if (keys.jump.isDown && body.blocked.down && state.canJump && !jumpB) {
+        // saut super power
+        if (state.SuperPowersActive) {
+          this.state.jumpDelay = 6666650;
+          this.body.setVelocityY(-800);
+        }
+        // saut droit
+        if ((!keys.left.isDown || !keys.right.isDown) && !state.SuperPowersActive) {
+          this.state.jumpDelay = 650;
+          this.body.setVelocityY(-180);
+        }
+        // saut en marchant
+        if ((keys.left.isDown || keys.right.isDown) && state.canJump && !state.SuperPowersActive) {
+          this.state.jumpDelay = 700;
+          this.body.setVelocityY(-180);
+        }
+        // saut en courant
+        if (keys.run.isDown && (keys.left.isDown || keys.right.isDown) && state.canJump && !state.SuperPowersActive) {
+          this.state.jumpDelay = 500;
+          this.body.setVelocityY(-this.state.speed);
+        }
         this.state.onJump = true;
         this.isJumping();
         this.state.canJump = false;
       }
-      // a l'atterissage
-      if (this.body.blocked.down) {
-        this.state.onJump = false;
-        this.ComboJumpBooster.enabled = true;
-      }
-      if (!this.body.blocked.down && jumpB) {
-        this.state.onJump = true;
-      }
-      // reset jump
-      if (this.state.stopJump) {
-        this.body.setVelocityY(this.state.speed);
-      }
-      // annule le timer du saut
-      if (!keys.jump.isDown && !this.state.stopJump) {
+      // si touche un plafond
+      if (body.blocked.up) {
         if (this.jumpCooldownTimer) {
           this.jumpCooldownTimer.remove();
         }
-        this.body.setVelocityY(this.state.speed);
+        this.body.setVelocityY(this.state.speed * 2);
+        this.state.runSpeed = 285;
+      }
+      // a l'atterissage
+      if (body.blocked.down) {
+        this.state.onJump = false;
+        this.ComboJumpBooster.enabled = true;
+      }
+      if (!body.blocked.down && jumpB) {
+        this.state.onJump = true;
+      }
+      // reset jump
+      if (state.stopJump) {
+        this.body.setVelocityY(this.state.speed * 2);
+      }
+      // annule le timer du saut
+      if (!keys.jump.isDown && !state.stopJump) {
+        if (this.jumpCooldownTimer) {
+          this.jumpCooldownTimer.remove();
+        }
+        this.body.setVelocityY(this.state.speed * 2);
       }
       // select weapon
       if (keys.select.isDown) {
         this.selectWeapon();
       }
-      // player animation play
-      if (this.lastAnim !== animationName) {
-        this.lastAnim = animationName;
-        this.animate(animationName, true);
-      }
+      
       // player on water
       if (this.onWater) {
         this.state.speed = 70;
         this.state.morphingSpeed = 55;
         this.state.jumpDelay = 300;
       } else {
-        this.state.speed = 165;
+        if (!keys.run.isDown) {
+          this.state.speed = 165;
+        }
         this.state.morphingSpeed = 140;
         this.state.jumpDelay = 500;
       }
       // flip player animation and bullets positions
-      if (this.body.velocity.x < 0) {
+      if (body.velocity.x < 0) {
         this.flipX = true;
         this.state.bulletOrientationX = 'left';
         this.state.bulletPositionX = 3;
-      } else if (this.body.velocity.x > 0) {
+        //console.log(this.playerGhostEmitter.getFrame())
+        //this.playerGhostEmitter.texture.key = this.texture.key;
+        //const lastFrame = this.playerGhostEmitter.getFrame()
+        //if (lastFrame.name !== this.anims.currentFrame.textureFrame.toString()) {
+          //console.log(this.anims.currentFrame)
+          //this.playerGhostEmitter.setFrame(this.anims.currentFrame.name);
+          //console.log(this.playerGhostEmitter)
+        //}
+        //this.body.velocity.x < -285 ? this.playerGhostEmitter.start() : this.playerGhostEmitter.stop();
+        this.playerGhostEmitter.scaleX.propertyValue = -1;
+      } else if (body.velocity.x > 0) {
         this.flipX = false;
         this.state.bulletOrientationX = 'right';
         this.state.bulletPositionX = 7;
+        //this.playerGhostEmitter.texture.key = this.texture.key;
+        //const lastFrame = this.playerGhostEmitter.getFrame()
+//console.log(this.anims, this.playerGhostEmitter)
+        //if (lastFrame.name !== this.anims.currentFrame.textureFrame) {
+          //this.playerGhostEmitter.setFrame(this.anims.currentFrame.name);
+        //}
+        //this.body.velocity.x > 285 ? this.playerGhostEmitter.start() : this.playerGhostEmitter.stop();
+        this.playerGhostEmitter.scaleX.propertyValue = 1;
       }
       // pause
       if (keys.pause.isDown) {
         this.scene.pauseGame();
       }
-    } else if (this.state.pause) {
+    } else if (state.pause) {
+      // GAME PAUSE
       if (!this.chooseDone && (keys.down.isDown || keys.up.isDown)) {
         this.scene.choose();
       }
@@ -331,6 +421,32 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.scene.launch();
       }
     }
+    if (!keys.run.isDown) {
+      this.state.runSpeed = 285;
+    }
+    // player animation play
+    if (this.lastAnim !== animationName) {
+      this.lastAnim = animationName;
+      this.animate(animationName, true);
+    }
+    // SPEED BOOSTER PART
+    const absSpeed = Math.abs(body.velocity.x);
+    if (absSpeed > 385) {
+      this.playerGhostEmitter.setFrame(this.anims.currentFrame.textureFrame.toString()).setLifespan(Math.abs(this.body.velocity.x / 10));
+      this.playerGhostEmitter.emitParticleAt(this.x, this.y);
+      if (absSpeed > 550) {
+        this.isSpeedRunningMax(true, time);
+        if (keys.down.isDown) {
+          this.SuperPowers(time);
+        }
+      }
+      return;
+    } else {
+      this.clearTint();
+      this.playerGhostEmitter.tint.propertyValue = 0xFFFFFF;
+    }
+    this.isSpeedRunningMax(false, time);
+    //console.log(body.y)
   }
 
   isJumping() {
@@ -344,6 +460,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   animate(str) {
     this.anims.play(str, true);
+    this.anims.setTimeScale(Math.abs(this.body.velocity.x) / 200)
   }
 
   stopAnimate(str) {
@@ -353,12 +470,85 @@ export default class Player extends Phaser.GameObjects.Sprite {
   isRunning() {
     if (this.keys.run.isDown
       && (this.keys.left.isDown || this.keys.right.isDown)
-      && this.body.blocked.down
+      // && this.body.blocked.down
       && !this.onWater) {
-      this.state.speed = this.state.runSpeed;
+      if (this.state.speed < this.state.runSpeed) {
+        this.state.speed += this.state.speed / 10;
+      }
+      if (this.inventory.speedBooster) {
+        this.isSpeedRunning();
+      }
     } else if (!this.keys.run.isDown && (this.keys.left.isDown || this.keys.right.isDown) && !this.onWater) {
       this.state.speed = 165;
     }
+  }
+
+  isSpeedRunning() {
+    this.scene.time.addEvent({
+      delay: 32,
+      callback: () => {
+        if (this.state.runSpeed < 600) {
+          this.state.runSpeed += this.state.runSpeed / 200;
+        }
+      },
+    });
+  }
+
+  isSpeedRunningMax(bool, time) {
+    if (!bool) {
+      if (this.colorToggleTimer) {
+        this.colorToggleTimer.destroy();
+        this.state.colorChange = false;
+      }
+      return;
+    }
+    if (this.state.colorChange) {
+      return;
+    }
+    this.state.colorChange = true;
+    this.colorToggleTimer = this.scene.time.addEvent({
+      delay: 64,
+      loop: true,
+      callback: () => {
+        if (this.tintBottomLeft !== 16777215) {
+          this.clearTint();
+          this.playerGhostEmitter.tint.propertyValue = 0xFFFFFF;
+          return;
+        }
+        const col = 0xDEFF00;
+        this.setTint(col);
+        this.playerGhostEmitter.tint.propertyValue = col;
+      },
+    });
+  }
+
+  SuperPowers(time) {
+    if (this.state.SuperPowersActive) {
+      return;
+    }
+    this.state.SuperPowersActive = true;
+    this.colorToggleTimer.destroy();
+    // display superpowers active
+    this.colorToggleTimer2 = this.scene.time.addEvent({
+      delay: 64,
+      loop: true,
+      callback: () => {
+        if (this.tintBottomLeft !== 16777215) {
+          this.clearTint();
+        } else {
+          this.setTintFill(0xDDFF00);
+        }
+      },
+    });
+    // ends superpowers
+    this.scene.time.addEvent({
+      delay: 5000,
+      callback: () => {
+        this.state.SuperPowersActive = false;
+        this.colorToggleTimer2.destroy();
+        this.clearTint();
+      },
+    });
   }
 
   shoot(time) {
@@ -385,7 +575,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       if (laser) {
         this.state.lastFired = time + this.inventory.fireRate;
         laser.visible = true;
-        // laser.anims.play('bull', true);
         if (this.onWater) {
           laser.setDepth(98);
         } else {
@@ -656,17 +845,25 @@ export default class Player extends Phaser.GameObjects.Sprite {
     }
     this.state.onJumpBoost = true;
     this.state.maxSpeed = 550;
-    this.body.setVelocityY(-this.state.speed);
+    this.body.setVelocityY(-550);
     this.body.velocity.normalize().scale(this.state.maxSpeed);
     this.scene.sound.play('jumpBooster', { volume: 0.08 });
+    // timer for not passing trough floor
+    this.scene.time.addEvent({
+      delay: 50,
+      callback: () => {
+        this.body.setSize(10, 35, true);
+      },
+    });
+    // timer for end of jumpBoster
     this.boostTimer = this.scene.time.addEvent({
       delay: 500,
       callback: () => {
         this.state.jumpBoost = false;
         this.state.onJumpBoost = false;
         jumpB = false;
+        this.body.setVelocityY(this.state.speed * 2);
         this.state.maxSpeed = 250;
-        this.body.setVelocityY(0);
       },
     });
   }
@@ -678,6 +875,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       this.state.jumpBoost = false;
       this.state.maxSpeed = 250;
       jumpB = false;
+      this.body.setVelocityY(this.state.speed * 2);
     }
   }
 

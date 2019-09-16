@@ -17,6 +17,12 @@ export default class LoadSavedGame extends Scene {
   create() {
     this.position = [];
     this.lastPosition = 0;
+    let totalTime = '';
+    if (localStorage.getItem('time')) {
+      let t = localStorage.getItem('time');
+      t = JSON.parse(t);
+      totalTime = new Date(t).toISOString().substr(11, 8);
+    }
 
     this.background = this.add.image(0, 0, 'background')
       .setOrigin(0, 0)
@@ -25,6 +31,7 @@ export default class LoadSavedGame extends Scene {
     if (localStorage.getItem('k438b')) {
       this.position = [128, 256, 384];
       this.loadGame = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' Load Game ', 48, 1);
+      this.timeGame = this.add.bitmapText(U.WIDTH - 192, this.position[0] + 20, 'atomic', ` ${totalTime} `, 20, 2);
       this.deleteSavedGame = this.add.bitmapText(U.WIDTH / 4, this.position[2], 'atomic', ' Delete Game ', 48, 1);
     } else {
       this.position = [128, 256];

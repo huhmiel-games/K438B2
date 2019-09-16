@@ -1,33 +1,29 @@
-// import U from '../utils/usefull';
-
-
 export default class SaveStation extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, config) {
     super(scene, x, y, config.key);
 
     this.scene = scene;
     this.state = {
-      name: config.name,
+      destination: config.destination,
       text: 'press fire to save the game',
       confirm: false,
       active: false,
       save: false,
     };
 
-    this.setDepth(50);
+    this.setDepth(100);
+    this.setPipeline('Light2D');
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = false;
-  }
-
-  preUpdate(time, delta) {
-    super.preUpdate(time, delta);
-    if (this.keys.fire.isDown) {
-      this.state.save = true;
-    }
+    this.isOverlap = false;
   }
 
   animate(str) {
     this.anims.play(str, true);
+  }
+
+  setIsOverlap() {
+    this.isOverlap = true;
   }
 }

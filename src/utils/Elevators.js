@@ -4,8 +4,8 @@ export default class Elevators extends Phaser.GameObjects.Sprite {
 
     this.scene = scene;
     this.state = {
-      up: config.up,
-      down: config.down,
+      up: config.up * 16,
+      down: config.down * 16,
       position: config.position,
       isMoving: false,
     };
@@ -26,7 +26,7 @@ export default class Elevators extends Phaser.GameObjects.Sprite {
         if (this.y >= this.state.up) {
           this.body.setVelocityY(-100);
         }
-        if (this.y <= this.state.up) {
+        if (this.y <= this.state.up + 8) {
           this.state.isMoving = false;
           this.body.setVelocityY(0);
           this.scene.time.addEvent({
@@ -41,7 +41,7 @@ export default class Elevators extends Phaser.GameObjects.Sprite {
         if (this.y <= this.state.down) {
           this.body.setVelocityY(100);
         }
-        if (this.y >= this.state.down) {
+        if (this.y >= this.state.down + 6) {
           this.state.isMoving = false;
           this.body.setVelocityY(0);
           this.scene.time.addEvent({

@@ -10,9 +10,10 @@ import DashBoard from './scenes/dashBoard';
 import Options from './scenes/Options';
 import Intro from './scenes/Intro';
 import endGame from './scenes/EndGame';
+import MapScene from './scenes/MapScene';
 
 const config = {
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   width: U.WIDTH,
   height: U.HEIGHT,
   pixelArt: true,
@@ -26,13 +27,13 @@ const config = {
     default: 'arcade',
     arcade: {
       tileBias: 20,
-      gravity: { y: 100 },
-      debug: false,
-      debugShowBody: false,
-      debugShowStaticBody: false,
+      gravity: { y: 0 }, //default 100
+      debug: true,
+      debugShowBody: true,
+      debugShowStaticBody: true,
     },
   },
-  scene: [Huhmiel, bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, endGame, gameOver],
+  scene: [Huhmiel, bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, MapScene, endGame, gameOver],
 };
 
 const game = new Phaser.Game(config);

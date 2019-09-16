@@ -27,37 +27,22 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-    if (this.isInside()) {
-      let animationName;
-      if (this.active) {
-        if (this.body.blocked.down) {
-          this.state.directionX = 0;
-          this.jumperJump();
-        }
-        if (!this.body.blocked.down) {
-          animationName = `${this.state.type}Jump`;
-        } else {
-          animationName = `${this.state.type}Idle`;
-        }
+    let animationName;
+    if (this.active) {
+      if (this.body.blocked.down) {
+        this.state.directionX = 0;
+        this.jumperJump();
       }
-      if (this.lastAnim !== animationName) {
-        this.lastAnim = animationName;
-        this.animate(animationName, true);
+      if (!this.body.blocked.down) {
+        animationName = `${this.state.type}Jump`;
+      } else {
+        animationName = `${this.state.type}Idle`;
       }
     }
-  }
-
-  // isInside check if this is near player
-  isInside() {
-    const { x, y } = this.scene.camPosition;
-    const x1 = x - 450;
-    const x2 = x + 450;
-    const y1 = y - 280;
-    const y2 = y + 280;
-    if ((x1 <= this.x) && (this.x <= x2) && (y1 <= this.y) && (this.y <= y2)) {
-      return true;
+    if (this.lastAnim !== animationName) {
+      this.lastAnim = animationName;
+      this.animate(animationName, true);
     }
-    return false;
   }
 
   jumperJump() {

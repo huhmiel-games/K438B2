@@ -10,6 +10,7 @@ import Boss1 from '../enemies/Boss1';
 import BossFinal from '../enemies/BossFinal';
 import Elevators from '../utils/Elevators';
 import Doors from '../utils/Doors';
+import SaveStation from '../utils/saveStation';
 import Lava from '../utils/Lava';
 import FireBalls from '../enemies/FireBalls';
 import WaterFall from '../utils/WaterFalls';
@@ -18,15 +19,26 @@ import countDeadEnemies from '../utils/counDeadEnemies';
 import countTime from '../utils/countTime';
 
 // Player
+import spritesheetPlayer from '../assets/spritesheets/player/atlas/spritesheetPlayer.png';
+import spritesheetPlayerN from '../assets/spritesheets/player/atlas/spritesheetPlayer_n.png';
+import spritesheetPlayerJSON from '../assets/spritesheets/player/atlas/spritesheetPlayer.json';
 
-import playerRunShoot from '../assets/spritesheets/player/runShoot.png';
-import idle from '../assets/spritesheets/player/idle.png';
-import stand from '../assets/spritesheets/player/stand.png';
-import jump from '../assets/spritesheets/player/jump.png';
-import jumpVertical from '../assets/spritesheets/player/jumpVertical.png';
-import duck from '../assets/spritesheets/player/duck.png';
-import shootUp from '../assets/spritesheets/player/shootUp.png';
-import morphingBall from '../assets/spritesheets/player/morphingBall.png';
+// Various
+import spritesheetVarious from '../assets/various/spritesheetVarious.png';
+import spritesheetVariousN from '../assets/various/spritesheetVarious_n.png';
+import spritesheetVariousJSON from '../assets/various/spritesheetVarious.json';
+
+
+// import playerRunShoot from '../assets/spritesheets/player/runShoot.png';
+// import playerRunShootN from '../assets/spritesheets/player/runShoot_n.png';
+// import idle from '../assets/spritesheets/player/idle.png';
+// import stand from '../assets/spritesheets/player/stand.png';
+// import standN from '../assets/spritesheets/player/stand_n.png';
+// import jump from '../assets/spritesheets/player/jump.png';
+// import jumpVertical from '../assets/spritesheets/player/jumpVertical.png';
+// import duck from '../assets/spritesheets/player/duck.png';
+// import shootUp from '../assets/spritesheets/player/shootUp.png';
+// import morphingBall from '../assets/spritesheets/player/morphingBall.png';
 
 // Power Up
 import powerupBlue from '../assets/powerupBleu.png';
@@ -36,7 +48,12 @@ import powerupRed from '../assets/powerupRouge.png';
 import powerUp from '../assets/spritesheets/Fx/power-up.png';
 
 // Enemies
+import spritesheetEnemies from '../assets/spritesheets/enemies/atlas/spritesheetEnemies.png';
+import spritesheetEnemiesN from '../assets/spritesheets/enemies/atlas/spritesheetEnemies_n.png';
+import spritesheetEnemiesJSON from '../assets/spritesheets/enemies/atlas/spritesheetEnemies.json';
+
 import crabe from '../assets/spritesheets/enemies/crab-walk.png';
+import crabeN from '../assets/spritesheets/enemies/crab-walk_n.png';
 import guepe from '../assets/spritesheets/enemies/guepe.png';
 import guepe2 from '../assets/spritesheets/enemies/guepe2.png';
 import jumper from '../assets/spritesheets/enemies/jumper-idle.png';
@@ -59,7 +76,14 @@ import boss1Hit from '../assets/spritesheets/enemies/boss1hit.png';
 import bosstest from '../assets/spritesheets/enemies/bossAttack.png';
 // Map
 import tiles from '../assets/environment/layers/tilesets.png';
-import map from '../maps/map1.json';
+import tilesN from '../assets/environment/layers/tilesets_n.png';
+import map1 from '../maps/map1.json';
+import map2 from '../maps/map2.json';
+import map3 from '../maps/map3.json';
+import map4 from '../maps/map4.json';
+import map5 from '../maps/map5.json';
+import map6 from '../maps/map6.json';
+import map7 from '../maps/map7.json';
 
 // Various
 import bullet from '../assets/spritesheets/Fx/shot.png';
@@ -72,6 +96,10 @@ import blackPixel from '../assets/blackPixel.png';
 import lavaPixel from '../assets/lavaPixel.png';
 import elevator from '../assets/elevator.png';
 import door from '../assets/door.png';
+import doorN from '../assets/door_n.png';
+import doorGreen from '../assets/doorGreen.png';
+import doorRed from '../assets/doorRed.png';
+import saveStation from '../assets/savestation.png';
 import head from '../assets/head.png';
 import whitePixel from '../assets/whitePixel.png';
 import lava from '../assets/lava.png';
@@ -82,6 +110,8 @@ import boss1dead from '../assets/boss1dead.png';
 // parralax
 import paraMiddleground from '../assets/environment/layers/para_middleground.png';
 import paraBackground from '../assets/environment/layers/background.png';
+import paraBackMountain from '../assets/environment/layers/backMountain.png';
+import paraMiddleMountain from '../assets/environment/layers/para_middleMountain.png';
 import bgLava from '../assets/bgLava.png';
 
 // import sounds fx
@@ -96,6 +126,7 @@ import playerHitFX from '../assets/sounds/playerHit.ogg';
 import morphFX from '../assets/sounds/playerHit2.ogg';
 import powerUpFX from '../assets/sounds/powerup.ogg';
 import selectFX from '../assets/sounds/select.ogg';
+import doorFX from '../assets/sounds/elevator.ogg';
 import jumpBoosterFX from '../assets/sounds/jumpboost.ogg';
 import getLifeFX from '../assets/sounds/getlife2.ogg';
 import runFX from '../assets/sounds/walk.ogg';
@@ -131,21 +162,26 @@ export default class playLvl1 extends Scene {
   // ====================================================================
   preload() {
     // map
-    this.load.image('tiles', tiles);
-    this.load.tilemapTiledJSON('map', map);
+    this.load.image('tiles', [tiles, tilesN]);
+    this.load.tilemapTiledJSON('map1', map1);
+    this.load.tilemapTiledJSON('map2', map2);
+    this.load.tilemapTiledJSON('map3', map3);
+    this.load.tilemapTiledJSON('map4', map4);
+    this.load.tilemapTiledJSON('map5', map5);
+    this.load.tilemapTiledJSON('map6', map6);
+    this.load.tilemapTiledJSON('map7', map7);
     // this.load.image('test', test);
 
     // player animation
-    // this.load.spritesheet('player', playerRun, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('playerShoot', playerRunShoot, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('idle', idle, { frameWidth: 40, frameHeight: 55 });
-    this.load.spritesheet('stand', stand, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('duck', duck, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('shootUp', shootUp, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('jump', jump, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('jumpVertical', jumpVertical, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('morphingBall', morphingBall, { frameWidth: 40, frameHeight: 40 });
-    // this.load.spritesheet('hurt', hurt, { frameWidth: 40, frameHeight: 40 });
+    this.load.atlas('player', [spritesheetPlayer, spritesheetPlayerN], spritesheetPlayerJSON);
+    // this.load.spritesheet('playerShoot', [playerRunShoot, playerRunShootN], { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('idle', idle, { frameWidth: 40, frameHeight: 55 });
+    // this.load.spritesheet('stand', [stand, standN], { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('duck', duck, { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('shootUp', shootUp, { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('jump', jump, { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('jumpVertical', jumpVertical, { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('morphingBall', morphingBall, { frameWidth: 40, frameHeight: 40 });
 
     // player bullets
     this.load.spritesheet('bullet', bullet, { frameWidth: 6, frameHeight: 4 });
@@ -155,6 +191,9 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('swell', swell, { frameWidth: 12, frameHeight: 12 });
     this.load.image('laser', laser);
 
+    // various
+    this.load.atlas('various', [spritesheetVarious, spritesheetVariousN], spritesheetVariousJSON);
+
     // power up
     this.load.spritesheet('powerupBlue', powerupBlue, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('powerupYellow', powerupYellow, { frameWidth: 16, frameHeight: 16 });
@@ -163,7 +202,9 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('powerUp', powerUp, { frameWidth: 23, frameHeight: 21 });
 
     // Enemies
-    this.load.spritesheet('crabe', crabe, { frameWidth: 48, frameHeight: 32 });
+    this.load.atlas('enemies', [spritesheetEnemies, spritesheetEnemiesN], spritesheetEnemiesJSON);
+
+    this.load.spritesheet('crabe', [crabe, crabeN], { frameWidth: 48, frameHeight: 32 });
     this.load.spritesheet('guepe', guepe, { frameWidth: 40, frameHeight: 47 });
     this.load.spritesheet('guepe2', guepe2, { frameWidth: 40, frameHeight: 47 });
     this.load.spritesheet('jumper', jumper, { frameWidth: 47, frameHeight: 32 });
@@ -189,7 +230,10 @@ export default class playLvl1 extends Scene {
     // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
     this.load.image('elevator', elevator);
-    this.load.image('door', door);
+    this.load.spritesheet('door', [door, doorN], { frameWidth: 8, frameHeight: 64 });
+    this.load.spritesheet('doorGreen', doorGreen, { frameWidth: 8, frameHeight: 64 });
+    this.load.spritesheet('doorRed', doorRed, { frameWidth: 8, frameHeight: 64 });
+    this.load.spritesheet('savestation', saveStation, { frameWidth: 32, frameHeight: 64 });
     this.load.spritesheet('lava', lava, { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('lavaFall', lavaFall, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('waterFall', waterFall, { frameWidth: 16, frameHeight: 16 });
@@ -201,6 +245,9 @@ export default class playLvl1 extends Scene {
     // parralax
     this.load.image('para_middle', paraMiddleground);
     this.load.image('para_back', paraBackground);
+    this.load.image('para_mountain', paraBackMountain);
+    this.load.image('para_middleMountain', paraMiddleMountain);
+
     this.load.image('bgLava', bgLava);
 
     // sounds
@@ -225,6 +272,8 @@ export default class playLvl1 extends Scene {
     this.load.audio('shake2', shake2);
     this.load.audio('guepe', guepeFX);
     this.load.audio('jumpers', grog);
+    this.load.audio('door', doorFX);
+    this.load.audio('doorLocked', morphFX);
 
     // sounds boss1
     this.load.audio('cri1', cri1);
@@ -241,160 +290,99 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   create() {
-    this.map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
-    this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16);
+    this.createAnimations();
 
+    // initialize the map and tileset
+    this.map = this.make.tilemap(this, { key: 'map1', tileWidth: 16, tileHeight: 16 });
+    this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16);
+    // this.map.renderDebug();
+    // create layers for the selected room (not needed anymore?)
+    // this.addLayers();
+
+    // initialize the time
     this.firstTimestamp = new Date().getTime();
     if (!localStorage.getItem('time')) {
       localStorage.setItem('time', 0);
     }
 
-    this.playerFlashTween = null;
-
+    // call stopFullscreen on esc key to prevent phaser 16.2 bug on esc key
     this.leaveFullscreenKey = this.input.keyboard.addKey('ESC')
       .on('down', () => {
         this.scale.stopFullscreen();
       });
 
+    // ====================================================================
     // parralax backgrounds
-    this.para_back = this.add.image(0, 0, 'para_back')
-      .setDepth(0)
-      .setScrollFactor(0.1)
-      .setOrigin(0, 0)
-      .setDisplaySize(800, 512);
+    // this.para_back = this.add.image(0, 0, 'para_back')
+    //   .setDepth(0)
+    //   .setScrollFactor(0.1)
+    //   .setOrigin(0, 0)
+    //   .setDisplaySize(800, 512);
 
-    this.para_middle = this.add.image(0, 0, 'para_middle')
-      .setDepth(3)
-      .setScrollFactor(0.5)
-      .setOrigin(0, 0)
-      .setDisplaySize(2048, 1024);
+    // this.para_middle = this.add.image(0, 0, 'para_middle')
+    //   .setDepth(3)
+    //   .setScrollFactor(0.5)
+    //   .setOrigin(0, 0)
+    //   .setDisplaySize(2048, 1024);
 
-    this.para_lava = this.add.image(0, 880, 'bgLava')
-      .setDepth(5)
-      .setScrollFactor(0.5)
-      .setOrigin(0, 0)
-      .setDisplaySize(1600, 1200);
-
-    // ====================================================================
-    // GAMEPAD SUPPORT
-    // no support yet, use qjoypad
+    // this.para_lava = this.add.image(0, 880, 'bgLava')
+    //   .setDepth(5)
+    //   .setScrollFactor(0.5)
+    //   .setOrigin(0, 0)
+    //   .setDisplaySize(1600, 1200);
 
     // ====================================================================
-    // LAYERS
-
-    this.backLayer = this.map.createDynamicLayer('back', this.tileset, 0, 0)
-      .setDepth(4);
-    this.middleLayer = this.map.createDynamicLayer('middle', this.tileset, 0, 0)
-      .setDepth(5);
-    this.middleLayer2 = this.map.createDynamicLayer('middle2', this.tileset, 0, 0)
-      .setDepth(10);
-    this.statue = this.map.createDynamicLayer('statue', this.tileset, 0, 0)
-      .setDepth(98);
-    this.eau = this.map.createDynamicLayer('eau', this.tileset, 0, 0)
-      .setDepth(99);
-    this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0)
-      .setDepth(100);
-    this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0)
-      .setDepth(106);
+    // Groups that need to be destroyed when changing room
+    this.giveLifeGroup = [];
+    this.powerups = [];
+    this.enemyGroup = [];
+    this.elevatorGroup = [];
+    this.lavaGroup = [];
+    this.doorGroup = [];
+    this.saveStationGroup = [];
 
     // ====================================================================
-    // player in water effect
-    this.waterAmbientMusic = this.sound.add('waterAmbient', { volume: 0.6 });
-    this.solLayer.setTileLocationCallback(2, 34, 26, 18, (e) => {
-      if (e === this.player) {
-        this.player.onWater = true;
-        this.player.setDepth(98);
-        if (!this.waterAmbientMusic.isPlaying) {
-          this.waterAmbientMusic.play();
-        }
-      }
-    }, this);
-    this.solLayer.setTileLocationCallback(30, 31, 1, 21, () => {
-      this.player.onWater = false;
-      this.player.setDepth(105);
-      this.waterAmbientMusic.stop();
-    }, this);
-    this.solLayer.setTileLocationCallback(2, 53, 29, 1, () => {
-      this.player.onWater = false;
-      this.player.setDepth(105);
-      this.waterAmbientMusic.stop();
-    }, this);
+    // player in water effect (need to be translated to room part)
+    // this.waterAmbientMusic = this.sound.add('waterAmbient', { volume: 0.6 });
+    // this.solLayer.setTileLocationCallback(2, 34, 26, 18, (e) => {
+    //   if (e === this.player) {
+    //     this.player.onWater = true;
+    //     this.player.setDepth(98);
+    //     if (!this.waterAmbientMusic.isPlaying) {
+    //       this.waterAmbientMusic.play();
+    //     }
+    //   }
+    // }, this);
+    // this.solLayer.setTileLocationCallback(30, 31, 1, 21, () => {
+    //   this.player.onWater = false;
+    //   this.player.setDepth(105);
+    //   this.waterAmbientMusic.stop();
+    // }, this);
+    // this.solLayer.setTileLocationCallback(2, 53, 29, 1, () => {
+    //   this.player.onWater = false;
+    //   this.player.setDepth(105);
+    //   this.waterAmbientMusic.stop();
+    // }, this);
 
     // ====================================================================
     // AMBIENT MUSIC
-    this.ambient1 = this.sound.add('ambient1', { volume: 0.2 });
-    this.ambient2 = this.sound.add('ambient2', { volume: 0.1 });
-    this.ambient3 = this.sound.add('ambient3', { volume: 0.1 });
+    this.musicGroup = [];
+    this.ambient1 = this.sound.add('ambient1', { volume: 0.2, loop: true });
+    this.ambient2 = this.sound.add('ambient2', { volume: 0.1, loop: true });
+    this.ambient3 = this.sound.add('ambient3', { volume: 0.1, loop: true });
+
+    this.musicGroup.push(this.ambient1, this.ambient2, this.ambient3);
 
     // ====================================================================
 
     // ====================================================================
     // PLAYER SECTION
-    this.player = new Player(this, 1924, 158, { key: 'player' });
+    this.player = new Player(this, 200, 100, { key: 'player' }); // 458, 122
+    //this.player.setPipeline('Light2D');
     this.playerHurt = false;
     this.player.body.setSize(15, 35, 6, 11);
-
-    this.anims.create({
-      key: 'walkShoot',
-      frames: this.anims.generateFrameNumbers('playerShoot', { start: 0, end: 9, first: 0 }),
-      frameRate: 15,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'runShoot',
-      frames: this.anims.generateFrameNumbers('playerShoot', { start: 0, end: 9, first: 0 }),
-      frameRate: 25,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'jumpBoost',
-      frames: this.anims.generateFrameNumbers('idle', { start: 0, end: 4, first: 0 }),
-      frameRate: 4,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'stand',
-      frames: this.anims.generateFrameNumbers('stand', { start: 1, end: 1, first: 1 }),
-      frameRate: 5,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'jump',
-      frames: this.anims.generateFrameNumbers('jump', { start: 0, end: 5, first: 0 }),
-      frameRate: 15,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'jumpVertical',
-      frames: this.anims.generateFrameNumbers('jumpVertical', { start: 0, end: 0, first: 0 }),
-      frameRate: 15,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'duck',
-      frames: this.anims.generateFrameNumbers('duck', { start: 0, end: 0, first: 0 }),
-      frameRate: 1,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'shootup',
-      frames: this.anims.generateFrameNumbers('shootUp', { start: 0, end: 0, first: 0 }),
-      frameRate: 1,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'morphingBall',
-      frames: this.anims.generateFrameNumbers('morphingBall', { start: 0, end: 3, first: 0 }),
-      frameRate: 16,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'morphingBallIdle',
-      frames: this.anims.generateFrameNumbers('morphingBall', { start: 0, end: 0, first: 0 }),
-      frameRate: 1,
-      repeat: -1,
-    });
-
+    //player anim
+    
     // player walk and run sounds
     this.walkplay = false;
     this.walkk = this.sound.add('run', { volume: 0.8 });
@@ -420,7 +408,6 @@ export default class playLvl1 extends Scene {
         });
       }
     });
-
     // player bullets
     this.player.bullets = this.physics.add.group({
       defaultKey: 'bullet',
@@ -428,6 +415,360 @@ export default class playLvl1 extends Scene {
       allowGravity: false,
       createIfNull: true,
     });
+    // player missiles
+    this.player.missiles = this.physics.add.group({
+      defaultKey: 'missile',
+      maxSize: 1,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    // player swell
+    this.player.swells = this.physics.add.group({
+      defaultKey: 'swell',
+      maxSize: 10,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    // player morphing bomb
+    this.player.bombs = this.physics.add.group({
+      defaultKey: 'bomb',
+      maxSize: 3,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    // player laser
+    this.player.lasers = this.physics.add.group({
+      defaultKey: 'laser',
+      maxSize: 10,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    this.playerFlashTween = null;
+
+    // ====================================================================
+    // loading saved game
+    if (this.data.systems.settings.data.loadSavedGame) {
+      this.loadGame();
+    }
+    // creating new game
+    if (!localStorage.getItem('k438b')) {
+      // this.transmission('New transmision-A problem occured during-the material transfer on planet-Sorry for inconvenience.');
+      this.player.inventory.savedPositionX = 400;
+      this.player.inventory.savedPositionY = 100;
+      const s = JSON.stringify(this.player.inventory);
+      localStorage.setItem('k438b', s);
+      this.loadGame();
+    }
+
+    this.explodeSprite = this.add.group({
+      defaultKey: 'transparentPixel',
+      maxSize: 30,
+      allowGravity: false,
+      createIfNull: true,
+    });
+
+    // the rhinobeetles
+    // this.loadRhino = false;
+    // if (!this.player.inventory.rhino) {
+    //   this.solLayer.setTileLocationCallback(53, 103, 1, 8, (e) => {
+    //     if (e === this.player && !this.loadRhino) {
+    //       this.loadRhino = true;
+    //       this.map.objects[11].objects.forEach((element) => {
+    //         this[element.name] = new RhinoBeetles(this, element.x, element.y - 16, {
+    //           key: element.properties.key,
+    //           life: element.properties.life,
+    //           damage: element.properties.damage,
+    //         });
+    //         this.enemyGroup.push(this[element.name]);
+    //       });
+    //     }
+    //   }, this);
+    // }
+
+    // ====================================================================
+    // BOSS 1
+    // this.anims.create({
+    //   key: 'boss1walk',
+    //   frames: this.anims.generateFrameNumbers('boss1walk', { start: 0, end: 13, first: 0 }),
+    //   frameRate: 40,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'boss1run',
+    //   frames: this.anims.generateFrameNumbers('boss1run', { start: 0, end: 9, first: 0 }),
+    //   frameRate: 20,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'boss1hit',
+    //   frames: this.anims.generateFrameNumbers('boss1hit', { start: 0, end: 8, first: 0 }),
+    //   frameRate: 10,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'boss1crouch',
+    //   frames: this.anims.generateFrameNumbers('boss1crouch', { start: 0, end: 13, first: 0 }),
+    //   frameRate: 40,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'boss1attack',
+    //   frames: this.anims.generateFrameNumbers('boss1attack', { start: 0, end: 8, first: 0 }),
+    //   frameRate: 15,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'boss1jump',
+    //   frames: this.anims.generateFrameNumbers('boss1jump', { start: 0, end: 18, first: 0 }),
+    //   frameRate: 10,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.boss1started = false;
+    // this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.2 });
+    // if (!this.player.inventory.boss1) {
+    //   this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
+    //     if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
+    //       this.boss1BattlePrep();
+    //     }
+    //   }, this);
+    //   this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
+    //     if (e === this.player && !this.player.inventory.boss1) {
+    //       this.boss1Battle();
+    //     }
+    //   }, this);
+    // }
+    // ========================================================================================================================================
+    // BOSS FINAL
+    // this.anims.create({
+    //   key: 'bossFinalAttack',
+    //   frames: this.anims.generateFrameNumbers('bossFinal', { start: 0, end: 7, first: 0 }),
+    //   frameRate: 16,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'bossFinalIntro',
+    //   frames: this.anims.generateFrameNumbers('bossFinal', { start: 8, end: 8, first: 8 }),
+    //   frameRate: 1,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.bossFinalReady = false;
+    // this.bossFinalstarted = false;
+    // if (!this.player.inventory.bossFinal) {
+    //   this.solLayer.setTileLocationCallback(70, 127, 8, 1, (e) => {
+    //     if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
+    //       this.bossFinalBattlePrep();
+    //     }
+    //   }, this);
+    //   this.solLayer.setTileLocationCallback(1, 188, 116, 1, (e) => {
+    //     if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
+    //       this.bossFinalBattlePrep();
+    //     }
+    //   }, this);
+    // }
+
+    // LAVA RISE
+    this.lavaRiseFlag = false;
+    this.onSismic = false;
+    this.isTheEnd = false; // My only friend, the end
+
+    // ====================================================================
+    // Populate room
+    // this.addPowerUp();
+    // this.addEnemies();
+    // this.createDoors();
+
+    // ====================================================================
+    // ====================================================================
+
+    // ====================================================================
+    // CAMERA
+    // set bounds so the camera won't go outside the game world
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    // make the camera follow the player
+    this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
+    this.cameras.main.transparent = true;
+    //this.cameras.main.setZoom(2);
+    this.cameras.main.fadeIn(200);
+
+    this.physics.world.setFPS(120);
+
+    // ====================================================================
+    //    COLLIDERS
+    // this.addColliders();
+
+    // ====================================================================
+
+    // //////////////////////////////////////////////////////////////////////
+    // this.mask = this.make.graphics({ fillStyle: { color: 0xffffff }, add: false })
+    //   .fillCircleShape(new Phaser.Geom.Circle(0, 6, 30));
+
+    // this.frontLayer.mask = new Phaser.Display.Masks.BitmapMask(this, this.mask);
+    // this.frontLayer.mask.invertAlpha = true;
+    // ====================================================================
+    // load the dashBoard
+    this.events.emit('loadingDone');
+  }
+
+  // ====================================================================
+  update() {
+    // lava rise
+    if (this.lavaRise) {
+      this.stopLavaRise();
+      this.sismicActivity();
+    }
+    if (this.playerLight && this.player) {
+      this.playerLight.setPosition(this.player.body.x, this.player.body.y);
+    } else {
+      this.playerLight.setPosition(-1000, -1000);
+    }
+    // player sonar
+    // if (this.player.state.onMorphingBall && this.player.inventory.morphingSonar) {
+    //   this.mask.x = this.player.x;
+    //   this.mask.y = this.player.y;
+    // } else {
+    //   this.mask.x = -300;
+    //   this.mask.y = -300;
+    // }
+    // ====================================================================
+
+    // player part --> probably not necessary anymore
+    // if (!this.player.state.pause || !this.playerDead) {
+    //   // if (this.player.body.velocity.x < 0) {
+    //   //   this.player.flipX = true;
+    //   //   this.player.state.bulletOrientationX = 'left';
+    //   //   this.player.state.bulletPositionX = 1;
+    //   // } else if (this.player.body.velocity.x > 0) {
+    //   //   this.player.flipX = false;
+    //   //   this.state.bulletOrientationX = 'right';
+    //   //   this.player.state.bulletPositionX = 9;
+    //   // }
+    //   // bodysize for duck
+    //   if (
+    //     this.player.keys.down.isDown
+    //     && !(this.player.keys.left.isDown || this.player.keys.right.isDown)
+    //     && !this.player.state.onMorphingBall
+    //     && !this.player.state.jumpBoost) {
+    //     // this.player.body.velocity.y = -0.5;
+    //     // this.player.body.setSize(10, 23, 8, 10);
+    //     // body size for morphing
+    //   } else if (this.player.state.onMorphingBall) {
+    //     // this.player.body.setSize(12, 12, true);
+    //     // this.player.body.setOffset(14, 20);
+    //     // body size for jumpBooster
+    //   } else if (this.player.state.jumpBoost) {
+    //     // this.player.body.setSize(10, 50, true);
+    //     // body size for others
+    //   } else {
+    //     // this.player.body.setSize(10, 35, 8, 10);
+    //     // this.player.body.setSize(10, 35, true);
+    //     // this.player.body.setOffset(8, 2);
+    //   }
+    // }
+
+    if (this.state.displayPowerUpMsg) {
+      this.msgtext.x = this.player.x;
+      this.msgtext.y = this.player.y - 60;
+    }
+    if (this.modalText) {
+      this.modalText.x = this.player.x;
+      this.modalText.y = this.player.y - 100;
+    }
+  }
+
+  addSceneLights() {
+    // Lights
+    if (this.lights.lights.length > 0) {
+      console.log('fonction necessaire')
+      this.lights.lights.forEach(light => this.lights.removeLight(light));
+    }
+
+    this.lights.enable();
+    // Player light
+    this.playerLight = this.lights.addLight(this.player.x, this.player.y + 48, 48, 0xFCDECA, 0.4);
+    // map light point
+    if (this.map.objects[13]) {
+      this.map.objects[13].objects.forEach((element) => {
+        this.lights.addLight(element.x, element.y, element.properties.radius, element.properties.color, element.properties.intensity)
+      });
+    }
+
+    // Player bullet light
+    // for (let i = 0; i < 8; i += 1) {
+    //   this[`lightbullet${i}`] = this.lights.addLight(-100, -100, 64, 0x555555, 1);
+    // }
+    // Ambient light
+    this.lights.setAmbientColor(0x222222);
+  }
+
+  createAnimations() {
+    // player
+    this.anims.create({
+      key: 'playerRun',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 0,
+        end: 9,
+        first: 0,
+      }),
+      frameRate: 25,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'jumpBoost',
+      frames: this.anims.generateFrameNumbers('player', { start: 10, end: 13, first: 10 }),
+      frameRate: 4,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'stand',
+      frames: this.anims.generateFrameNumbers('player', { start: 14, end: 16, first: 14 }),
+      frameRate: 5,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'jump',
+      frames: this.anims.generateFrameNumbers('player', { start: 20, end: 25, first: 20 }),
+      frameRate: 15,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'jumpVertical',
+      frames: this.anims.generateFrameNumbers('player', { start: 19, end: 19, first: 19 }),
+      frameRate: 15,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'duck',
+      frames: this.anims.generateFrameNumbers('player', { start: 17, end: 17, first: 17 }),
+      frameRate: 1,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'shootup',
+      frames: this.anims.generateFrameNumbers('player', { start: 18, end: 18, first: 18 }),
+      frameRate: 1,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'morphingBall',
+      frames: this.anims.generateFrameNumbers('player', { start: 26, end: 29, first: 26 }),
+      frameRate: 16,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'morphingBallIdle',
+      frames: this.anims.generateFrameNumbers('player', { start: 26, end: 29, first: 26 }),
+      frameRate: 1,
+      repeat: -1,
+    });
+    // ////////////////////////////////////////////////////
     this.anims.create({
       key: 'bull',
       frames: this.anims.generateFrameNumbers('bullet', { start: 0, end: 2, first: 0 }),
@@ -440,41 +781,17 @@ export default class playLvl1 extends Scene {
       frameRate: 20,
       repeat: 0,
     });
-
-    // player missiles
-    this.player.missiles = this.physics.add.group({
-      defaultKey: 'missile',
-      maxSize: 1,
-      allowGravity: false,
-      createIfNull: true,
-    });
     this.anims.create({
       key: 'missile',
       frames: this.anims.generateFrameNumbers('missile', { start: 0, end: 2, first: 0 }),
       frameRate: 10,
       repeat: -1,
     });
-
-    // player swell
-    this.player.swells = this.physics.add.group({
-      defaultKey: 'swell',
-      maxSize: 10,
-      allowGravity: false,
-      createIfNull: true,
-    });
     this.anims.create({
       key: 'swell',
       frames: this.anims.generateFrameNumbers('swell', { start: 0, end: 7, first: 0 }),
       frameRate: 24,
       repeat: -1,
-    });
-
-    // player morphing bomb
-    this.player.bombs = this.physics.add.group({
-      defaultKey: 'bomb',
-      maxSize: 3,
-      allowGravity: false,
-      createIfNull: true,
     });
     this.anims.create({
       key: 'bomb',
@@ -488,50 +805,31 @@ export default class playLvl1 extends Scene {
       frameRate: 10,
       repeat: 0,
     });
-
-    // player laser
-    this.player.lasers = this.physics.add.group({
-      defaultKey: 'laser',
-      maxSize: 10,
-      allowGravity: false,
-      createIfNull: true,
-    });
-
-    // ====================================================================
-    // chargement de la sauvegarde
-    if (this.data.systems.settings.data.loadSavedGame) {
-      this.loadGame();
-    }
-    if (!localStorage.getItem('k438b')) {
-      this.transmission('New transmision-A problem occured during-the material transfer on planet-Sorry for inconvenience.');
-      this.saveGame();
-    }
-    // ====================================================================
     // SECTION POWER-UP
     this.anims.create({
       key: 'powerupYellow',
-      frames: this.anims.generateFrameNumbers('powerupYellow', { start: 0, end: 5, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 30, end: 35, first: 30 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'powerupBlue',
-      frames: this.anims.generateFrameNumbers('powerupBlue', { start: 0, end: 5, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 12, end: 17, first: 12 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'powerupRed',
-      frames: this.anims.generateFrameNumbers('powerupRed', { start: 0, end: 5, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 24, end: 29, first: 24 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'powerupGreen',
-      frames: this.anims.generateFrameNumbers('powerupGreen', { start: 0, end: 5, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 18, end: 23, first: 18 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
@@ -543,22 +841,37 @@ export default class playLvl1 extends Scene {
       yoyo: true,
       repeat: -1,
     });
-    this.powerups = [];
-    this.map.objects[0].objects.forEach((element) => {
-      if (this.player.inventory.powerUp[element.properties.id] === 0) {
-        this[element.name] = new PowerUp(this, element.x, element.y - 16, {
-          key: element.properties.key,
-          name: element.properties.name,
-          ability: element.properties.ability,
-          text: element.properties.text,
-          id: element.properties.id,
-        });
-        this[element.name].setDisplayOrigin(0, 0).animate(element.properties.powerup, true);
-        this[element.name].body.setSize(16, 16).setAllowGravity(false);
-        this.powerups.push(this[element.name]);
-      }
+
+    // doors anim
+    this.anims.create({
+      key: 'opendoorBlue',
+      frames: this.anims.generateFrameNumbers('various', { start: 0, end: 3, first: 0 }),
+      frameRate: 16,
+      yoyo: false,
+      repeat: 0,
     });
-    this.giveLifeGroup = [];
+    this.anims.create({
+      key: 'opendoorGreen',
+      frames: this.anims.generateFrameNumbers('various', { start: 4, end: 7, first: 4 }),
+      frameRate: 16,
+      yoyo: false,
+      repeat: 0,
+    });
+    this.anims.create({
+      key: 'opendoorRed',
+      frames: this.anims.generateFrameNumbers('various', { start: 8, end: 11, first: 8 }),
+      frameRate: 16,
+      yoyo: false,
+      repeat: 0,
+    });
+    // savestation anim
+    this.anims.create({
+      key: 'savestation',
+      frames: this.anims.generateFrameNumbers('savestation', { start: 0, end: 1, first: 0 }),
+      frameRate: 5,
+      yoyo: false,
+      repeat: -1,
+    });
     // ====================================================================
     // SECTION ENEMIES
     // explode animation
@@ -576,30 +889,24 @@ export default class playLvl1 extends Scene {
       yoyo: false,
       repeat: 10,
     });
-    this.explodeSprite = this.add.group({
-      defaultKey: 'transparentPixel',
-      maxSize: 30,
-      allowGravity: false,
-      createIfNull: true,
-    });
     // anims enemies
     this.anims.create({
       key: 'crabe',
-      frames: this.anims.generateFrameNumbers('crabe', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('enemies', { start: 0, end: 3, first: 0 }),
       frameRate: 8,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'guepe',
-      frames: this.anims.generateFrameNumbers('guepe', { start: 0, end: 2, first: 0 }),
+      frames: this.anims.generateFrameNumbers('enemies', { start: 4, end: 6, first: 4 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'guepe2',
-      frames: this.anims.generateFrameNumbers('guepe2', { start: 0, end: 2, first: 0 }),
+      frames: this.anims.generateFrameNumbers('enemies', { start: 7, end: 9, first: 7 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
@@ -648,7 +955,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'fireball',
-      frames: this.anims.generateFrameNumbers('fireball', { start: 0, end: 2, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 36, end: 38, first: 36 }),
       frameRate: 5,
       yoyo: false,
       repeat: -1,
@@ -667,395 +974,54 @@ export default class playLvl1 extends Scene {
       yoyo: false,
       repeat: -1,
     });
-    this.enemyGroup = [];
-    // the crabs
-    this.map.objects[1].objects.forEach((element) => {
-      this[element.name] = new Crabes(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this[element.name].animate(element.properties.key, true);
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the wasps
-    this.map.objects[3].objects.forEach((element) => {
-      this[element.name] = new Guepes(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this[element.name].animate(element.properties.key, true);
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the jumpers
-    this.map.objects[4].objects.forEach((element) => {
-      this[element.name] = new Jumpers(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the octopus
-    this.map.objects[9].objects.forEach((element) => {
-      this[element.name] = new Octopus(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the rhinobeetles
-    this.loadRhino = false;
-    if (!this.player.inventory.rhino) {
-      this.solLayer.setTileLocationCallback(53, 103, 1, 8, (e) => {
-        if (e === this.player && !this.loadRhino) {
-          this.loadRhino = true;
-          this.map.objects[11].objects.forEach((element) => {
-            this[element.name] = new RhinoBeetles(this, element.x, element.y - 16, {
-              key: element.properties.key,
-              life: element.properties.life,
-              damage: element.properties.damage,
-            });
-            this.enemyGroup.push(this[element.name]);
-          });
-        }
-      }, this);
-    }
-
-    // ====================================================================
-    // BOSS 1
-    this.anims.create({
-      key: 'boss1walk',
-      frames: this.anims.generateFrameNumbers('boss1walk', { start: 0, end: 13, first: 0 }),
-      frameRate: 40,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'boss1run',
-      frames: this.anims.generateFrameNumbers('boss1run', { start: 0, end: 9, first: 0 }),
-      frameRate: 20,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'boss1hit',
-      frames: this.anims.generateFrameNumbers('boss1hit', { start: 0, end: 8, first: 0 }),
-      frameRate: 10,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'boss1crouch',
-      frames: this.anims.generateFrameNumbers('boss1crouch', { start: 0, end: 13, first: 0 }),
-      frameRate: 40,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'boss1attack',
-      frames: this.anims.generateFrameNumbers('boss1attack', { start: 0, end: 8, first: 0 }),
-      frameRate: 15,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'boss1jump',
-      frames: this.anims.generateFrameNumbers('boss1jump', { start: 0, end: 18, first: 0 }),
-      frameRate: 10,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.boss1started = false;
-    this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.2 });
-    if (!this.player.inventory.boss1) {
-      this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
-        if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
-          this.boss1BattlePrep();
-        }
-      }, this);
-      this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
-        if (e === this.player && !this.player.inventory.boss1) {
-          this.boss1Battle();
-        }
-      }, this);
-    }
-    // ========================================================================================================================================
-    // BOSS FINAL
-    this.anims.create({
-      key: 'bossFinalAttack',
-      frames: this.anims.generateFrameNumbers('bossFinal', { start: 0, end: 7, first: 0 }),
-      frameRate: 16,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'bossFinalIntro',
-      frames: this.anims.generateFrameNumbers('bossFinal', { start: 8, end: 8, first: 8 }),
-      frameRate: 1,
-      yoyo: false,
-      repeat: -1,
-    });
-    this.bossFinalReady = false;
-    this.bossFinalstarted = false;
-    if (!this.player.inventory.bossFinal) {
-      this.solLayer.setTileLocationCallback(70, 127, 8, 1, (e) => {
-        if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
-          this.bossFinalBattlePrep();
-        }
-      }, this);
-      this.solLayer.setTileLocationCallback(1, 188, 116, 1, (e) => {
-        if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
-          this.bossFinalBattlePrep();
-        }
-      }, this);
-    }
-
-    // ====================================================================
-    // ELEVATORS
-    this.elevatorGroup = [];
-    this.map.objects[2].objects.forEach((element) => {
-      this[element.name] = new Elevators(this, element.x + 24, element.y, {
-        key: element.properties.key,
-        up: element.properties.up,
-        down: element.properties.down,
-        position: element.properties.position,
-      });
-      this.elevatorGroup.push(this[element.name]);
-    });
-
-    // ====================================================================
-    // LAVA
+    // lava
     this.anims.create({
       key: 'lava',
-      frames: this.anims.generateFrameNumbers('lava', { start: 0, end: 2, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 45, end: 47, first: 45 }),
       frameRate: 2,
       yoyo: false,
       repeat: -1,
     });
-    this.lavaGroup = [];
-    this.map.objects[7].objects.forEach((element) => {
-      this[element.name] = new Lava(this, element.x, element.y, {
-        key: element.properties.key,
-      });
-      this[element.name].animate(element.properties.key, true);
-      this[element.name].setDepth(11);
-      this.lavaGroup.push(this[element.name]);
-    });
-    // lava fall, same group as lava
     this.anims.create({
       key: 'lavaFall',
-      frames: this.anims.generateFrameNumbers('lavaFall', { start: 0, end: 2, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 42, end: 44, first: 42 }),
       frameRate: 3,
       yoyo: false,
       repeat: -1,
     });
-    this.map.objects[6].objects.forEach((element) => {
-      this[element.name] = new Lava(this, element.x + 16, element.y - 8, {
-        key: element.properties.key,
-      });
-      this[element.name].setDisplaySize(32, 32).setDepth(10);
-      this[element.name].animate(element.properties.key, true);
-      this.lavaGroup.push(this[element.name]);
-    });
-    // fireballs, same group as lava
-    this.map.objects[10].objects.forEach((element) => {
-      this[element.name] = new FireBalls(this, element.x + 16, element.y - 8, {
-        key: element.properties.key,
-      });
-      this[element.name].animate(element.properties.key, true);
-      this.lavaGroup.push(this[element.name]);
-    });
-
-    // LAVA RISE
-    this.lavaRiseFlag = false;
-    this.onSismic = false;
-    this.isTheEnd = false; // My only friend, the end
-
-    // ====================================================================
-    // WATER FALL
+    // water fall
     this.anims.create({
       key: 'waterFall',
-      frames: this.anims.generateFrameNumbers('waterFall', { start: 0, end: 2, first: 0 }),
+      frames: this.anims.generateFrameNumbers('various', { start: 39, end: 41, first: 39 }),
       frameRate: 6,
       yoyo: false,
       repeat: -1,
     });
-    this.map.objects[5].objects.forEach((element) => {
-      this[element.name] = new WaterFall(this, element.x + 8, element.y - 8, {
-        key: element.properties.key,
-      });
-      this[element.name].animate(element.properties.key, true);
-    });
-
-    // ====================================================================
-    // DOORS
-    this.doorGroup = [];
-    this.map.objects[8].objects.forEach((element, i) => {
-      if (element.properties.side === 'right') {
-        this[element.name] = new Doors(this, element.x + 3, element.y + 9, {
-          key: element.properties.key,
-          side: element.properties.side,
-        });
-        this[element.name].body.setSize(10, 47);
-      }
-      if (element.properties.side === 'left') {
-        this[element.name] = new Doors(this, element.x + 16, element.y + 9, {
-          key: element.properties.key,
-          side: element.properties.side,
-        });
-        this[element.name].flipX = true;
-        this[element.name].body.setSize(10, 47);
-      }
-      this.doorGroup.push(this[element.name]);
-      if (i === 7) {
-        this[element.name].body.enable = false;
-        this[element.name].alpha = 0;
-      }
-    });
-
-    // ====================================================================
-
-    // ====================================================================
-    // CAMERA
-    // set bounds so the camera won't go outside the game world
-    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-    // make the camera follow the player
-    this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
-    this.cameras.main.transparent = true;
-    this.cameras.main.setZoom(2);
-    this.cameras.main.fadeIn(200);
-
-    // ====================================================================
-    //    COLLIDERS
-    this.solLayer.setCollisionByProperty({ collides: true });
-
-    this.physics.add.collider(this.player, this.solLayer, null);
-    this.physics.add.collider(this.doorGroup, this.player, null);
-    this.physics.add.collider(this.enemyGroup, this.solLayer, null);
-    this.physics.add.collider(this.enemyGroup, this.doorGroup, null);
-    this.physics.add.collider(this.lavaGroup, this.solLayer, null);
-    this.physics.add.collider([this.player.bullets, this.player.swells], this.solLayer, this.player.bulletKill, null, this.player);
-    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player);
-    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player);
-    this.physics.add.collider([this.player.bullets, this.player.swells], this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
-    this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
-    this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
-    this.physics.add.collider(this.elevatorGroup, [this.player, this.player.bullets], elm => elm.handleElevator(this.player), null, this);
-    this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
-    this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
-    this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
-    this.physics.add.overlap(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
-    this.physics.add.overlap([
-      this.player.bullets,
-      this.player.swells,
-      this.player.missiles,
-      this.player.lasers], this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
-
-    // ====================================================================
-
-    // for isInside
-    this.camPosition = {};
-
-    // //////////////////////////////////////////////////////////////////////
-    this.mask = this.make.graphics({ fillStyle: { color: 0xffffff }, add: false })
-      .fillCircleShape(new Phaser.Geom.Circle(0, 6, 30));
-
-    this.frontLayer.mask = new Phaser.Display.Masks.BitmapMask(this, this.mask);
-    this.frontLayer.mask.invertAlpha = true;
-    // ====================================================================
-    // load the dashBoard
-    this.events.emit('loadingDone');
   }
 
-  // ====================================================================
-  update() {
-    this.camPosition = this.cameras.main.midPoint;
-    this.playMusic();
-    // lava rise
-    if (this.lavaRise) {
-      this.stopLavaRise();
-      this.sismicActivity();
-    }
-    // player sonar
-    if (this.player.state.onMorphingBall && this.player.inventory.morphingSonar) {
-      this.mask.x = this.player.x;
-      this.mask.y = this.player.y;
-    } else {
-      this.mask.x = -300;
-      this.mask.y = -300;
-    }
-    // player part --> probably not necessary anymore
-    // if (!this.player.state.pause || !this.playerDead) {
-    //   // if (this.player.body.velocity.x < 0) {
-    //   //   this.player.flipX = true;
-    //   //   this.player.state.bulletOrientationX = 'left';
-    //   //   this.player.state.bulletPositionX = 1;
-    //   // } else if (this.player.body.velocity.x > 0) {
-    //   //   this.player.flipX = false;
-    //   //   this.state.bulletOrientationX = 'right';
-    //   //   this.player.state.bulletPositionX = 9;
-    //   // }
-    //   // bodysize for duck
-    //   if (
-    //     this.player.keys.down.isDown
-    //     && !(this.player.keys.left.isDown || this.player.keys.right.isDown)
-    //     && !this.player.state.onMorphingBall
-    //     && !this.player.state.jumpBoost) {
-    //     // this.player.body.velocity.y = -0.5;
-    //     // this.player.body.setSize(10, 23, 8, 10);
-    //     // body size for morphing
-    //   } else if (this.player.state.onMorphingBall) {
-    //     // this.player.body.setSize(12, 12, true);
-    //     // this.player.body.setOffset(14, 20);
-    //     // body size for jumpBooster
-    //   } else if (this.player.state.jumpBoost) {
-    //     // this.player.body.setSize(10, 50, true);
-    //     // body size for others
-    //   } else {
-    //     // this.player.body.setSize(10, 35, 8, 10);
-    //     // this.player.body.setSize(10, 35, true);
-    //     // this.player.body.setOffset(8, 2);
-    //   }
-    // }
-
-    if (this.state.displayPowerUpMsg) {
-      this.msgtext.x = this.player.x;
-      this.msgtext.y = this.player.y - 60;
-    }
-    if (this.modalText) {
-      this.modalText.x = this.player.x;
-      this.modalText.y = this.player.y - 100;
-    }
+  addParaBack(image) {
+    this.para_back = this.add.image(0, 0, image)
+      .setDepth(0)
+      .setScrollFactor(0.2)
+      .setOrigin(0, 0)
+      .setDisplaySize(800, 512);
   }
 
-  playMusic() {
-    if (this.player.y <= 1024 && !this.isTheEnd) {
-      if (this.ambient2.isPlaying) {
-        this.ambient2.stop();
+  addParaMiddle(image) {
+    this.para_middle = this.add.image(0, 0, image)
+      .setDepth(3)
+      .setScrollFactor(0.5)
+      .setOrigin(0, 0)
+      .setDisplaySize(2048, 1024);
+  }
+
+  playMusic(music) {
+    for (let i = 0; i < this.musicGroup.length; i += 1) {
+      if (this.musicGroup[i].isPlaying && this.musicGroup[i].key === music) {
+        break;
       }
-      if (!this.ambient1.isPlaying) {
-        this.ambient1.play();
-      }
-    }
-    if (this.player.y <= 2080 && this.player.y > 1024) {
-      if (this.ambient1.isPlaying || this.ambient3.isPlaying) {
-        this.ambient1.stop();
-        this.ambient3.stop();
-      }
-      if (!this.ambient2.isPlaying) {
-        this.ambient2.play();
-      }
-    }
-    if (this.player.y <= 3056 && this.player.y > 2080) {
-      if (this.ambient2.isPlaying) {
-        this.ambient2.stop();
-      }
-      if (!this.ambient3.isPlaying && !this.bossMusic.isPlaying) {
-        this.ambient3.play();
-      }
+      this.musicGroup[i].stop();
+      this[music].play();
     }
   }
 
@@ -1099,36 +1065,6 @@ export default class playLvl1 extends Scene {
     });
   }
 
-  endMission() {
-    if (!this.isTheEnd) {
-      this.isTheEnd = true;
-      this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel')
-        .setOrigin(0.5, 0.5)
-        .setDepth(1000)
-        .setDisplaySize(4096, 4096)
-        .setAlpha(0);
-      this.countTime();
-      this.ambient1.stop();
-      this.tween = this.tweens.add({
-        targets: this.round,
-        ease: 'Sine.easeInOut',
-        duration: 1500,
-        delay: 0,
-        repeat: 0,
-        yoyo: false,
-        alpha: {
-          getStart: () => 0,
-          getEnd: () => 1,
-        },
-        onComplete: () => {
-          this.lavaRise = null;
-          this.ambient1.stop();
-          this.scene.start('endGame');
-        },
-      });
-    }
-  }
-
   stopLavaRise() {
     if (!this.lavaRiseFlag && this.lavaRise.y > 0) {
       this.lavaRiseFlag = true;
@@ -1146,10 +1082,7 @@ export default class playLvl1 extends Scene {
       this.events.emit('setHealth', { life: this.player.inventory.life });
     } else if (elm.state.ability === 'speedfire') {
       this.player.addSpeedFire();
-    } else if (elm.state.ability === 'missile' && !this.player.inventory.boss1) {
-      this.state.displayPowerUpMsg = false;
-      return;
-    } else if (elm.state.ability === 'missile' && this.player.inventory.boss1) {
+    } else if (elm.state.ability === 'missile') {
       this.player.addMissile();
     } else if (elm.state.ability === 'laser') {
       this.player.inventory[elm.state.ability] = true;
@@ -1189,6 +1122,7 @@ export default class playLvl1 extends Scene {
   // ====================================================================
   pauseGame() {
     if (!this.player.state.pause) {
+      this.events.emit('pause');
       this.countTime();
       this.player.state.pause = true;
       this.physics.pause();
@@ -1250,6 +1184,7 @@ export default class playLvl1 extends Scene {
     this.player.chooseDone = true;
     if (this.player.state.pause) {
       if (this.lastPosition === 0) {
+        this.events.emit('unpause');
         this.player.state.pause = false;
         this.scene.scene.physics.resume();
         this.player.anims.resume(this.player.anims.currentFrame);
@@ -1279,13 +1214,27 @@ export default class playLvl1 extends Scene {
   }
 
   // ====================================================================
-  saveGame() {
-    this.player.inventory.savedPositionX = this.player.x;
-    this.player.inventory.savedPositionY = this.player.y;
-    const s = JSON.stringify(this.player.inventory);
-    localStorage.setItem('k438b', s);
-    this.sound.play('melo');
-    this.countTime();
+  saveGame(player, savestation) {
+    if (player === this.player && !savestation.isOverlap) {
+      savestation.setIsOverlap();
+      this.player.inventory.savedPositionX = this.player.x;
+      this.player.inventory.savedPositionY = this.player.y;
+      this.player.inventory.map = 'map4';
+      const s = JSON.stringify(this.player.inventory);
+      localStorage.setItem('k438b', s);
+      this.sound.play('melo');
+      this.msgText = this.add.bitmapText(this.cameras.main.worldView.x + 200, this.cameras.main.worldView.y + 128, 'atomic', 'Game Saved', 30, 1)
+        .setOrigin(0.5, 0.5)
+        .setAlpha(1)
+        .setDepth(110);
+      this.countTime();
+      this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          this.msgText.setAlpha(0);
+        },
+      });
+    }
   }
 
   // ====================================================================
@@ -1294,6 +1243,7 @@ export default class playLvl1 extends Scene {
     this.player.inventory = JSON.parse(l);
     this.player.x = this.player.inventory.savedPositionX;
     this.player.y = this.player.inventory.savedPositionY;
+    this.startRoom(this.player.inventory.map);
   }
 
   // ====================================================================
@@ -1308,9 +1258,9 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   playerIsHit(elm) {
-    if (!this.playerHurt) {
+    if (!this.playerHurt && Math.abs(this.player.body.velocity.x) < 400) {
       this.playerHurt = true; // flag
-      // this.player.animate('hurt');
+      this.player.state.runSpeed = 285;
       this.sound.play('playerHit');
       this.player.inventory.life -= elm.state.damage;
       this.playerFlashTween = this.tweens.add({
@@ -1363,6 +1313,18 @@ export default class playLvl1 extends Scene {
         });
       }
     }
+    if (!this.playerHurt && Math.abs(this.player.body.velocity.x) >= 400) {
+      elm.clearTint();
+      this.giveLife = this.physics.add.staticSprite(elm.x, elm.y, 'powerUp');
+      this.giveLife.setDepth(105);
+      this.giveLife.health = elm.state.giveLife;
+      this.giveLife.body.setSize(23, 21);
+      this.giveLife.anims.play('powerUp');
+      this.giveLifeGroup.push(this.giveLife);
+      this.enemyExplode(elm.x, elm.y);
+      this.enemyDestroy(elm);
+      return;
+    }
     this.events.emit('setHealth', { life: this.player.inventory.life }); // set health dashboard scene
   }
 
@@ -1372,11 +1334,11 @@ export default class playLvl1 extends Scene {
     d = JSON.parse(d);
     d += 1;
     localStorage.setItem('d', d);
-    this.bossMusic.stop();
+    // this.bossMusic.stop();
     this.ambient1.stop();
     this.ambient2.stop();
     this.ambient3.stop();
-    this.waterAmbientMusic.stop();
+    // this.waterAmbientMusic.stop();
     this.countTime();
     if (this.lavaRise) {
       this.lavaRise = null;
@@ -1653,10 +1615,359 @@ export default class playLvl1 extends Scene {
     });
   }
 
+  addColliders() {
+    this.solLayer.setCollisionByProperty({ collides: true });
+
+    this.physics.add.collider(this.player, this.solLayer, null);
+    // this.physics.add.collider(this.doorGroup, this.player, null);
+    this.physics.add.collider(this.enemyGroup, this.solLayer, null);
+    this.physics.add.collider(this.enemyGroup, this.doorGroup, (e, d) => { this[e.name].checkCollision(d); }, null, this);
+    this.physics.add.collider(this.lavaGroup, this.solLayer, null);
+    this.physics.add.collider([this.player.bullets, this.player.swells], this.solLayer, this.player.bulletKill, null, this.player);
+    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player);
+    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player);
+    // this.physics.add.collider([this.player.bullets, this.player.swells], this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
+    // this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
+    this.physics.add.collider([this.player.bullets, this.player.missiles, this.player.lasers], this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
+    this.physics.add.collider(this.elevatorGroup, this.player, elm => this.handleElevator(elm), null, this);
+    this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
+    this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
+    this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
+    this.physics.add.overlap(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
+    this.physics.add.overlap([
+      this.player.bullets,
+      this.player.swells,
+      this.player.missiles,
+      this.player.lasers], this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
+
+    this.physics.add.collider(this.player, this.doorGroup, (player, door) => this.changeRoom(player, door), null, this);
+  }
+
+  addLayers() {
+    this.solLayer = this.map.createDynamicLayer('collideGround', this.tileset, 0, 0)
+      .setDepth(11).setPipeline('Light2D');
+    this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0)
+      .setDepth(4);
+    this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0)
+      .setDepth(5);
+    this.middleLayer2 = this.map.createDynamicLayer('middle2', this.tileset, 0, 0)
+      .setDepth(10).setPipeline('Light2D');
+    this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0)
+      .setDepth(98);
+    this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0)
+      .setDepth(99);
+    this.normalLayer = this.map.createDynamicLayer('normalLayer', this.tileset, 0, 0)
+      .setDepth(100);
+    this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0)
+      .setDepth(106).setPipeline('Light2D');
+
+    const debugGraphics = this.add.graphics().setAlpha(0.75);
+    this.solLayer.renderDebug(debugGraphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
+    });
+  }
+
+  addPowerUp() {
+    this.map.objects[0].objects.forEach((element) => {
+      if (this.player.inventory.powerUp[element.properties.id] === 0) {
+        this[element.name] = new PowerUp(this, element.x, element.y - 16, {
+          key: element.properties.key,
+          name: element.properties.name,
+          ability: element.properties.ability,
+          text: element.properties.text,
+          id: element.properties.id,
+        });
+        this[element.name].setDisplayOrigin(0, 0).animate(element.properties.powerup, true);
+        this[element.name].body.setSize(16, 16).setAllowGravity(false);
+        this.powerups.push(this[element.name]);
+      }
+    });
+  }
+
+  addDoors() {
+    this.map.objects[8].objects.forEach((element) => {
+      if (element.properties.side === 'right') {
+        this[element.name] = new Doors(this, element.x + 3, element.y + 9, {
+          key: element.properties.key,
+          name: element.name,
+          side: element.properties.side,
+          playerX: element.properties.playerX,
+          playerY: element.properties.playerY,
+          destination: element.properties.destination,
+          openWith: element.properties.openWith,
+        });
+        this[element.name].body.setSize(10, 47);
+        // add door light
+        this.lights.addLight(element.x + 3, element.y + 9, 64, 0xEEBB22, 1);
+      }
+      if (element.properties.side === 'left') {
+        this[element.name] = new Doors(this, element.x + 13, element.y + 9, {
+          key: element.properties.key,
+          name: element.name,
+          side: element.properties.side,
+          playerX: element.properties.playerX,
+          playerY: element.properties.playerY,
+          destination: element.properties.destination,
+          openWith: element.properties.openWith,
+        });
+        this[element.name].flipX = true;
+        this[element.name].body.setSize(10, 47);
+        // add door light
+        this.lights.addLight(element.x + 13, element.y + 9, 64, 0xEEBB22, 1);
+      }
+      this.doorGroup.push(this[element.name]);
+    });
+  }
+
+  createElevators() {
+    this.map.objects[2].objects.forEach((element) => {
+      if (this.player.y < element.properties.up * 16) {
+        this[element.name] = new Elevators(this, element.x + 24, element.properties.up * 16 + 7, {
+          name: element.name,
+          key: element.properties.key,
+          up: element.properties.up,
+          down: element.properties.down,
+          position: 'up',
+        });
+      } else {
+        this[element.name] = new Elevators(this, element.x + 24, element.properties.down * 16 + 7, {
+          name: element.name,
+          key: element.properties.key,
+          up: element.properties.up,
+          down: element.properties.down,
+          position: 'down',
+        });
+      }
+      this.elevatorGroup.push(this[element.name]);
+    });
+  }
+
+  handleElevator(elm) {
+    if (this.player.body.touching.down && this.player.keys.down.isDown && elm.state.position === 'up') {
+      elm.handleElevator();
+    }
+    if (this.player.body.touching.down && this.player.keys.up.isDown && elm.state.position === 'down') {
+      elm.handleElevator();
+    }
+  }
+
+  addEnemies() {
+    // the crabs
+    this.map.objects[1].objects.forEach((element) => {
+      this[element.name] = new Crabes(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this[element.name].setPipeline('Light2D');
+      this[element.name].animate(element.properties.key, true);
+      this.enemyGroup.push(this[element.name]);
+    });
+    // the wasps
+    this.map.objects[3].objects.forEach((element) => {
+      this[element.name] = new Guepes(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this[element.name].animate(element.properties.key, true);
+      this.enemyGroup.push(this[element.name]);
+    });
+    // the jumpers
+    this.map.objects[4].objects.forEach((element) => {
+      this[element.name] = new Jumpers(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this.enemyGroup.push(this[element.name]);
+    });
+    // the octopus
+    this.map.objects[9].objects.forEach((element) => {
+      this[element.name] = new Octopus(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this.enemyGroup.push(this[element.name]);
+    });
+  }
+
+  addLava() {
+    // lava
+    this.map.objects[7].objects.forEach((element) => {
+      this[element.name] = new Lava(this, element.x, element.y, {
+        key: element.properties.key,
+      });
+      this[element.name].animate(element.properties.key, true);
+      this[element.name].setDepth(11).setPipeline('Light2D');
+      this.lavaGroup.push(this[element.name]);
+    });
+
+    // lava fall, same group as lava
+    this.map.objects[6].objects.forEach((element) => {
+      this[element.name] = new Lava(this, element.x + 16, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].setDisplaySize(32, 32).setDepth(10).setPipeline('Light2D');
+      this[element.name].animate(element.properties.key, true);
+      this.lavaGroup.push(this[element.name]);
+    });
+
+    // fireballs, same group as lava
+    this.map.objects[10].objects.forEach((element) => {
+      this[element.name] = new FireBalls(this, element.x + 16, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].setPipeline('Light2D').animate(element.properties.key, true);
+      this.lavaGroup.push(this[element.name]);
+    });
+  }
+
+  addWaterFall() {
+    this.map.objects[5].objects.forEach((element) => {
+      this[element.name] = new WaterFall(this, element.x + 8, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].setPipeline('Light2D').animate(element.properties.key, true);
+    });
+  }
+
+  addSavestation() {
+    if (this.map.objects[12]) {
+      this.map.objects[12].objects.forEach((element) => {
+        this[element.name] = new SaveStation(this, element.x + 16, element.y + 6, {
+          key: element.properties.key,
+          destination: element.properties.destination,
+        });
+        this[element.name].animate(element.properties.key, true);
+        this.saveStationGroup.push(this[element.name]);
+        this.physics.add.overlap(this.player, this[element.name], (player, savestation) => this.saveGame(player, savestation), null, this.player);
+        this.lights.addLight(element.x, element.y, 256, 0x2C928A, 0.8);
+      });
+    }
+  }
+
   // ====================================================================
+
   openDoor(d, miss) {
-    this.player.missileKill(miss);
-    d.destroyDoor();
+    if (d.state.openWith === 'any') {
+      d.openDoor();
+      miss.destroy();
+      return;
+    }
+    if (d.state.openWith === 'missile' && miss.texture.key === 'missile') {
+      d.openDoor();
+      miss.destroy();
+      return;
+    }
+    if (d.state.openWith === 'laser' && miss.texture.key === 'laser') {
+      d.openDoor();
+      miss.destroy();
+      return;
+    }
+    miss.destroy();
+    this.sound.play('doorLocked', { volume: 0.5, rate: 0.5 });
+  }
+
+  startRoom(room) {
+    // clean up
+    this.cameras.main.fadeOut(50);
+    this.physics.world.colliders.destroy();
+    this.map.destroy();
+    this.doorGroup.forEach(e => e.destroyDoor());
+    this.giveLifeGroup.forEach(e => e.destroy());
+    this.powerups.forEach(e => e.destroy());
+    this.enemyGroup.forEach(e => e.destroy());
+    this.elevatorGroup.forEach(e => e.destroy());
+    this.lavaGroup.forEach(e => e.destroy());
+    this.doorGroup.forEach(e => e.destroy());
+    this.lights.lights.forEach(light => this.lights.removeLight(light));
+    // create room
+    this.map = this.make.tilemap({ key: room, tileWidth: 16, tileHeight: 16 });
+    this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16);
+    this.addParaBack(this.map.properties.paraBack);
+    this.addParaMiddle(this.map.properties.paraMiddle);
+    this.addLayers();
+    this.addSceneLights();
+    this.addDoors();
+    // this.addEnemies();
+    this.player.x = this.player.inventory.savedPositionX + 24;
+    this.player.y = this.player.inventory.savedPositionY;
+    this.addColliders();
+    this.addPowerUp();
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
+    this.cameras.main.fadeIn(50);
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.events.emit('loadingDone');
+      },
+    });
+  }
+
+  changeRoom(player, doorP) {
+    // if door closed, return!!
+    if (doorP && doorP.alpha === 1) {
+      return;
+    }
+    // destroy leaving room
+    this.cameras.main.fadeOut(50);
+    this.physics.world.colliders.destroy();
+    this.map.destroy();
+    this.doorGroup.forEach(e => e.destroyDoor());
+    this.doorGroup = [];
+    this.giveLifeGroup.forEach(e => e.destroy());
+    this.powerups.forEach(e => e.destroy());
+    this.powerups = [];
+    this.enemyGroup.forEach(e => e.destroy());
+    this.enemyGroup = [];
+    this.elevatorGroup.forEach(e => e.destroy());
+    this.elevatorGroup = [];
+    this.lavaGroup.forEach(e => e.destroy());
+    this.lavaGroup = [];
+    this.doorGroup.forEach(e => e.destroy());
+    this.doorGroup = [];
+    this.saveStationGroup.forEach(e => e.destroy());
+    this.saveStationGroup = [];
+    this.para_back.destroy();
+    this.para_middle.destroy();
+    this.lights.lights.forEach(light => this.lights.removeLight(light));
+
+    // create new room
+    this.map = this.make.tilemap({ key: doorP.state.destination, tileWidth: 16, tileHeight: 16 });
+    this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16);
+    this.addLayers();
+    this.addSceneLights();
+    this.addDoors();
+    // this.addParaBack(this.map.properties.paraBack);
+    // this.addParaMiddle(this.map.properties.paraMiddle);
+    this.addEnemies();
+    this.addLava();
+    this.addWaterFall();
+    this.addSavestation();
+    this.cameras.main.stopFollow();
+    this.cameras.main.setScroll(doorP.state.playerX * 16, doorP.state.playerY * 16);
+    if (doorP.state.side === 'left') {
+      this.player.body.reset(doorP.state.playerX * 16, doorP.state.playerY * 16 + 20);
+    } else {
+      this.player.body.reset(doorP.state.playerX * 16, doorP.state.playerY * 16 + 20);
+    }
+    this.createElevators();
+    this.addColliders();
+    this.addPowerUp();
+    this.playMusic(this.map.properties.music);
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
+    this.cameras.main.fadeIn(50);
+    console.log('LIGHTCOUNT: ', this.lights.getLightCount())
   }
 
   // ====================================================================
@@ -1773,5 +2084,35 @@ export default class playLvl1 extends Scene {
         this.bossFinalstarted = true;
       },
     });
+  }
+
+  endMission() {
+    if (!this.isTheEnd) {
+      this.isTheEnd = true;
+      this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel')
+        .setOrigin(0.5, 0.5)
+        .setDepth(1000)
+        .setDisplaySize(4096, 4096)
+        .setAlpha(0);
+      this.countTime();
+      this.ambient1.stop();
+      this.tween = this.tweens.add({
+        targets: this.round,
+        ease: 'Sine.easeInOut',
+        duration: 1500,
+        delay: 0,
+        repeat: 0,
+        yoyo: false,
+        alpha: {
+          getStart: () => 0,
+          getEnd: () => 1,
+        },
+        onComplete: () => {
+          this.lavaRise = null;
+          this.ambient1.stop();
+          this.scene.start('endGame');
+        },
+      });
+    }
   }
 }
