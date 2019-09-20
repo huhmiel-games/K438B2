@@ -18,11 +18,13 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this);
     this.body.setAllowGravity().setGravityY(500).setSize(16, 16).setOffset(16, 12);
     this.getFired = false;
+    this.flipX = true;
+    this.followPath = false;
   }
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-    if (this.active) {
+    if (this.active && !this.followPath) {
       this.body.setVelocityX(this.state.directionX);
       this.body.setVelocityY(this.state.directionY);
       // turn back if blocked
@@ -46,6 +48,16 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
         this.flipX = false;
       }
     }
+    if (this.active && this.scene[`path${this.name}`]) {
+      this.scene[`path${this.name}`].active ? this.startOnPath() : this.followPath = false;
+    }
+  }
+
+  startOnPath() {
+    this.setPosition(this.scene[`path${this.name}`].x, this.scene[`path${this.name}`].y);
+    this.body.setAllowGravity(false)
+    this.angle = this.scene[`path${this.name}`].angle;
+    this.followPath = true;
   }
 
   animate(str) {

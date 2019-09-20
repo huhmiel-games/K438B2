@@ -43,7 +43,6 @@ export default class Doors extends Phaser.GameObjects.Sprite {
     if (!this.isOpen) {
       this.isOpen = true;
       this.scene.sound.play('door', { rate: 2 });
-      console.log(`open${this.state.key}`)
       this.anims.play(`open${this.state.key}`, true).on('animationcomplete', () => {
         this.setAlpha(0);
         if (this.state.side === 'left') {

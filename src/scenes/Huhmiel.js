@@ -28,7 +28,7 @@ export default class Huhmiel extends Scene {
   }
 
   create() {
-    this.huhmiel = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2, 'atomic', 'huhmiel games', 50, 1)
+    this.huhmiel = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2, 'atomic', 'huhmiel games', 30, 1)
       .setOrigin(0.5, 0.5)
       .setAlpha(0);
 

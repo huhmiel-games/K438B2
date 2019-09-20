@@ -20,6 +20,7 @@ import countTime from '../utils/countTime';
 
 // Player
 import spritesheetPlayer from '../assets/spritesheets/player/atlas/spritesheetPlayer.png';
+import spritesheetPlayerJaune from '../assets/spritesheets/player/atlas/spritesheetPlayer_jaune.png';
 import spritesheetPlayerN from '../assets/spritesheets/player/atlas/spritesheetPlayer_n.png';
 import spritesheetPlayerJSON from '../assets/spritesheets/player/atlas/spritesheetPlayer.json';
 
@@ -84,6 +85,9 @@ import map4 from '../maps/map4.json';
 import map5 from '../maps/map5.json';
 import map6 from '../maps/map6.json';
 import map7 from '../maps/map7.json';
+import map8 from '../maps/map8.json';
+import map9 from '../maps/map9.json';
+
 
 // Various
 import bullet from '../assets/spritesheets/Fx/shot.png';
@@ -170,10 +174,13 @@ export default class playLvl1 extends Scene {
     this.load.tilemapTiledJSON('map5', map5);
     this.load.tilemapTiledJSON('map6', map6);
     this.load.tilemapTiledJSON('map7', map7);
+    this.load.tilemapTiledJSON('map8', map8);
+    this.load.tilemapTiledJSON('map9', map9);
     // this.load.image('test', test);
 
     // player animation
     this.load.atlas('player', [spritesheetPlayer, spritesheetPlayerN], spritesheetPlayerJSON);
+    this.load.atlas('playerJaune', [spritesheetPlayerJaune, spritesheetPlayerN], spritesheetPlayerJSON);
     // this.load.spritesheet('playerShoot', [playerRunShoot, playerRunShootN], { frameWidth: 40, frameHeight: 40 });
     // this.load.spritesheet('idle', idle, { frameWidth: 40, frameHeight: 55 });
     // this.load.spritesheet('stand', [stand, standN], { frameWidth: 40, frameHeight: 40 });
@@ -230,13 +237,13 @@ export default class playLvl1 extends Scene {
     // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
     this.load.image('elevator', elevator);
-    this.load.spritesheet('door', [door, doorN], { frameWidth: 8, frameHeight: 64 });
-    this.load.spritesheet('doorGreen', doorGreen, { frameWidth: 8, frameHeight: 64 });
-    this.load.spritesheet('doorRed', doorRed, { frameWidth: 8, frameHeight: 64 });
+    // this.load.spritesheet('door', [door, doorN], { frameWidth: 8, frameHeight: 64 });
+    // this.load.spritesheet('doorGreen', doorGreen, { frameWidth: 8, frameHeight: 64 });
+    // this.load.spritesheet('doorRed', doorRed, { frameWidth: 8, frameHeight: 64 });
     this.load.spritesheet('savestation', saveStation, { frameWidth: 32, frameHeight: 64 });
     this.load.spritesheet('lava', lava, { frameWidth: 32, frameHeight: 32 });
-    this.load.spritesheet('lavaFall', lavaFall, { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('waterFall', waterFall, { frameWidth: 16, frameHeight: 16 });
+    // this.load.spritesheet('lavaFall', lavaFall, { frameWidth: 16, frameHeight: 16 });
+    // this.load.spritesheet('waterFall', waterFall, { frameWidth: 16, frameHeight: 16 });
     this.load.image('blackPixel', blackPixel);
     this.load.image('whitePixel', whitePixel);
     this.load.image('lavaPixel', lavaPixel);
@@ -295,9 +302,6 @@ export default class playLvl1 extends Scene {
     // initialize the map and tileset
     this.map = this.make.tilemap(this, { key: 'map1', tileWidth: 16, tileHeight: 16 });
     this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16);
-    // this.map.renderDebug();
-    // create layers for the selected room (not needed anymore?)
-    // this.addLayers();
 
     // initialize the time
     this.firstTimestamp = new Date().getTime();
@@ -340,6 +344,7 @@ export default class playLvl1 extends Scene {
     this.lavaGroup = [];
     this.doorGroup = [];
     this.saveStationGroup = [];
+    this.pathGroup = [];
 
     // ====================================================================
     // player in water effect (need to be translated to room part)
@@ -377,11 +382,9 @@ export default class playLvl1 extends Scene {
 
     // ====================================================================
     // PLAYER SECTION
-    this.player = new Player(this, 200, 100, { key: 'player' }); // 458, 122
-    //this.player.setPipeline('Light2D');
+    this.player = new Player(this, 34 * 16, 26 * 16, { key: 'player' }); // 458, 122
     this.playerHurt = false;
     this.player.body.setSize(15, 35, 6, 11);
-    //player anim
     
     // player walk and run sounds
     this.walkplay = false;
@@ -453,8 +456,8 @@ export default class playLvl1 extends Scene {
     // creating new game
     if (!localStorage.getItem('k438b')) {
       // this.transmission('New transmision-A problem occured during-the material transfer on planet-Sorry for inconvenience.');
-      this.player.inventory.savedPositionX = 400;
-      this.player.inventory.savedPositionY = 100;
+      this.player.inventory.savedPositionX = 34 * 16;
+      this.player.inventory.savedPositionY = 26 * 16;
       const s = JSON.stringify(this.player.inventory);
       localStorage.setItem('k438b', s);
       this.loadGame();
@@ -467,126 +470,11 @@ export default class playLvl1 extends Scene {
       createIfNull: true,
     });
 
-    // the rhinobeetles
-    // this.loadRhino = false;
-    // if (!this.player.inventory.rhino) {
-    //   this.solLayer.setTileLocationCallback(53, 103, 1, 8, (e) => {
-    //     if (e === this.player && !this.loadRhino) {
-    //       this.loadRhino = true;
-    //       this.map.objects[11].objects.forEach((element) => {
-    //         this[element.name] = new RhinoBeetles(this, element.x, element.y - 16, {
-    //           key: element.properties.key,
-    //           life: element.properties.life,
-    //           damage: element.properties.damage,
-    //         });
-    //         this.enemyGroup.push(this[element.name]);
-    //       });
-    //     }
-    //   }, this);
-    // }
-
-    // ====================================================================
-    // BOSS 1
-    // this.anims.create({
-    //   key: 'boss1walk',
-    //   frames: this.anims.generateFrameNumbers('boss1walk', { start: 0, end: 13, first: 0 }),
-    //   frameRate: 40,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'boss1run',
-    //   frames: this.anims.generateFrameNumbers('boss1run', { start: 0, end: 9, first: 0 }),
-    //   frameRate: 20,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'boss1hit',
-    //   frames: this.anims.generateFrameNumbers('boss1hit', { start: 0, end: 8, first: 0 }),
-    //   frameRate: 10,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'boss1crouch',
-    //   frames: this.anims.generateFrameNumbers('boss1crouch', { start: 0, end: 13, first: 0 }),
-    //   frameRate: 40,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'boss1attack',
-    //   frames: this.anims.generateFrameNumbers('boss1attack', { start: 0, end: 8, first: 0 }),
-    //   frameRate: 15,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'boss1jump',
-    //   frames: this.anims.generateFrameNumbers('boss1jump', { start: 0, end: 18, first: 0 }),
-    //   frameRate: 10,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.boss1started = false;
-    // this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.2 });
-    // if (!this.player.inventory.boss1) {
-    //   this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
-    //     if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
-    //       this.boss1BattlePrep();
-    //     }
-    //   }, this);
-    //   this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
-    //     if (e === this.player && !this.player.inventory.boss1) {
-    //       this.boss1Battle();
-    //     }
-    //   }, this);
-    // }
-    // ========================================================================================================================================
-    // BOSS FINAL
-    // this.anims.create({
-    //   key: 'bossFinalAttack',
-    //   frames: this.anims.generateFrameNumbers('bossFinal', { start: 0, end: 7, first: 0 }),
-    //   frameRate: 16,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'bossFinalIntro',
-    //   frames: this.anims.generateFrameNumbers('bossFinal', { start: 8, end: 8, first: 8 }),
-    //   frameRate: 1,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.bossFinalReady = false;
-    // this.bossFinalstarted = false;
-    // if (!this.player.inventory.bossFinal) {
-    //   this.solLayer.setTileLocationCallback(70, 127, 8, 1, (e) => {
-    //     if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
-    //       this.bossFinalBattlePrep();
-    //     }
-    //   }, this);
-    //   this.solLayer.setTileLocationCallback(1, 188, 116, 1, (e) => {
-    //     if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
-    //       this.bossFinalBattlePrep();
-    //     }
-    //   }, this);
-    // }
 
     // LAVA RISE
     this.lavaRiseFlag = false;
     this.onSismic = false;
     this.isTheEnd = false; // My only friend, the end
-
-    // ====================================================================
-    // Populate room
-    // this.addPowerUp();
-    // this.addEnemies();
-    // this.createDoors();
-
-    // ====================================================================
-    // ====================================================================
 
     // ====================================================================
     // CAMERA
@@ -595,18 +483,13 @@ export default class playLvl1 extends Scene {
     // make the camera follow the player
     this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
     this.cameras.main.transparent = true;
-    //this.cameras.main.setZoom(2);
     this.cameras.main.fadeIn(200);
 
+    // set the fps to 120 for good collisions at high speed
     this.physics.world.setFPS(120);
 
-    // ====================================================================
-    //    COLLIDERS
-    // this.addColliders();
-
-    // ====================================================================
-
     // //////////////////////////////////////////////////////////////////////
+    // mask for morphing sonar
     // this.mask = this.make.graphics({ fillStyle: { color: 0xffffff }, add: false })
     //   .fillCircleShape(new Phaser.Geom.Circle(0, 6, 30));
 
@@ -615,10 +498,21 @@ export default class playLvl1 extends Scene {
     // ====================================================================
     // load the dashBoard
     this.events.emit('loadingDone');
+
+    // DEBUG / HELPERS
+    this.text1 = this.add.text(10, 226, '', { fill: '#00ff00' }).setDepth(5000);
   }
 
   // ====================================================================
   update() {
+    // DEBUG
+    const pointer = this.input.activePointer;
+
+    this.text1.setText([
+      `x: ${Math.round(pointer.worldX)}`,
+      `y: ${Math.round(pointer.worldY)}`,
+    ]);
+    this.text1.setPosition(this.cameras.main.scrollX, this.cameras.main.scrollY + 226)
     // lava rise
     if (this.lavaRise) {
       this.stopLavaRise();
@@ -630,48 +524,8 @@ export default class playLvl1 extends Scene {
       this.playerLight.setPosition(-1000, -1000);
     }
     // player sonar
-    // if (this.player.state.onMorphingBall && this.player.inventory.morphingSonar) {
-    //   this.mask.x = this.player.x;
-    //   this.mask.y = this.player.y;
-    // } else {
-    //   this.mask.x = -300;
-    //   this.mask.y = -300;
-    // }
+    this.setSonarPosition();
     // ====================================================================
-
-    // player part --> probably not necessary anymore
-    // if (!this.player.state.pause || !this.playerDead) {
-    //   // if (this.player.body.velocity.x < 0) {
-    //   //   this.player.flipX = true;
-    //   //   this.player.state.bulletOrientationX = 'left';
-    //   //   this.player.state.bulletPositionX = 1;
-    //   // } else if (this.player.body.velocity.x > 0) {
-    //   //   this.player.flipX = false;
-    //   //   this.state.bulletOrientationX = 'right';
-    //   //   this.player.state.bulletPositionX = 9;
-    //   // }
-    //   // bodysize for duck
-    //   if (
-    //     this.player.keys.down.isDown
-    //     && !(this.player.keys.left.isDown || this.player.keys.right.isDown)
-    //     && !this.player.state.onMorphingBall
-    //     && !this.player.state.jumpBoost) {
-    //     // this.player.body.velocity.y = -0.5;
-    //     // this.player.body.setSize(10, 23, 8, 10);
-    //     // body size for morphing
-    //   } else if (this.player.state.onMorphingBall) {
-    //     // this.player.body.setSize(12, 12, true);
-    //     // this.player.body.setOffset(14, 20);
-    //     // body size for jumpBooster
-    //   } else if (this.player.state.jumpBoost) {
-    //     // this.player.body.setSize(10, 50, true);
-    //     // body size for others
-    //   } else {
-    //     // this.player.body.setSize(10, 35, 8, 10);
-    //     // this.player.body.setSize(10, 35, true);
-    //     // this.player.body.setOffset(8, 2);
-    //   }
-    // }
 
     if (this.state.displayPowerUpMsg) {
       this.msgtext.x = this.player.x;
@@ -683,33 +537,20 @@ export default class playLvl1 extends Scene {
     }
   }
 
-  addSceneLights() {
-    // Lights
-    if (this.lights.lights.length > 0) {
-      console.log('fonction necessaire')
-      this.lights.lights.forEach(light => this.lights.removeLight(light));
-    }
-
-    this.lights.enable();
-    // Player light
-    this.playerLight = this.lights.addLight(this.player.x, this.player.y + 48, 48, 0xFCDECA, 0.4);
-    // map light point
-    if (this.map.objects[13]) {
-      this.map.objects[13].objects.forEach((element) => {
-        this.lights.addLight(element.x, element.y, element.properties.radius, element.properties.color, element.properties.intensity)
-      });
-    }
-
-    // Player bullet light
-    // for (let i = 0; i < 8; i += 1) {
-    //   this[`lightbullet${i}`] = this.lights.addLight(-100, -100, 64, 0x555555, 1);
-    // }
-    // Ambient light
-    this.lights.setAmbientColor(0x222222);
-  }
-
+  // ====================================================================
+  // ANIMATIONS
   createAnimations() {
     // player
+    this.anims.create({
+      key: 'playerWalk',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 0,
+        end: 9,
+        first: 0,
+      }),
+      frameRate: 18,
+      repeat: -1,
+    });
     this.anims.create({
       key: 'playerRun',
       frames: this.anims.generateFrameNumbers('player', {
@@ -769,17 +610,12 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     // ////////////////////////////////////////////////////
+    // weapons
     this.anims.create({
       key: 'bull',
       frames: this.anims.generateFrameNumbers('bullet', { start: 0, end: 2, first: 0 }),
       frameRate: 10,
       repeat: -1,
-    });
-    this.anims.create({
-      key: 'impact',
-      frames: this.anims.generateFrameNumbers('impact', { start: 0, end: 5, first: 0 }),
-      frameRate: 20,
-      repeat: 0,
     });
     this.anims.create({
       key: 'missile',
@@ -799,13 +635,20 @@ export default class playLvl1 extends Scene {
       frameRate: 1,
       repeat: -1,
     });
+    // impacts
+    this.anims.create({
+      key: 'impact',
+      frames: this.anims.generateFrameNumbers('impact', { start: 0, end: 5, first: 0 }),
+      frameRate: 20,
+      repeat: 0,
+    });
     this.anims.create({
       key: 'impactBomb',
       frames: this.anims.generateFrameNumbers('impact', { start: 0, end: 5, first: 0 }),
       frameRate: 10,
       repeat: 0,
     });
-    // SECTION POWER-UP
+    // power-up
     this.anims.create({
       key: 'powerupYellow',
       frames: this.anims.generateFrameNumbers('various', { start: 30, end: 35, first: 30 }),
@@ -842,7 +685,7 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
 
-    // doors anim
+    // doors
     this.anims.create({
       key: 'opendoorBlue',
       frames: this.anims.generateFrameNumbers('various', { start: 0, end: 3, first: 0 }),
@@ -998,21 +841,20 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
   }
+  // ====================================================================
+  // morphing sonar set position
 
-  addParaBack(image) {
-    this.para_back = this.add.image(0, 0, image)
-      .setDepth(0)
-      .setScrollFactor(0.2)
-      .setOrigin(0, 0)
-      .setDisplaySize(800, 512);
-  }
-
-  addParaMiddle(image) {
-    this.para_middle = this.add.image(0, 0, image)
-      .setDepth(3)
-      .setScrollFactor(0.5)
-      .setOrigin(0, 0)
-      .setDisplaySize(2048, 1024);
+  async setSonarPosition() {
+    if (!this.mask || !this.player.inventory.morphingSonar) {
+      return;
+    }
+    if (this.player.state.onMorphingBall) {
+      this.mask.x = this.player.x;
+      this.mask.y = this.player.y;
+    } else {
+      this.mask.x = -300;
+      this.mask.y = -300;
+    }
   }
 
   playMusic(music) {
@@ -1120,6 +962,7 @@ export default class playLvl1 extends Scene {
   }
 
   // ====================================================================
+  // GAME PAUSE
   pauseGame() {
     if (!this.player.state.pause) {
       this.events.emit('pause');
@@ -1129,7 +972,7 @@ export default class playLvl1 extends Scene {
       this.player.anims.pause(this.player.anims.currentFrame);
       this.msg = this.add.image(this.cameras.main.worldView.x, this.cameras.main.worldView.y, 'blackPixel')
         .setOrigin(0, 0)
-        .setDisplaySize(400, 256)
+        .setDisplaySize(U.WIDTH, U.HEIGHT)
         .setAlpha(0.9)
         .setDepth(109);
 
@@ -1160,7 +1003,6 @@ export default class playLvl1 extends Scene {
     }
   }
 
-  // ====================================================================
   choose() {
     this.player.chooseDone = true;
     if (this.player.state.pause) {
@@ -1179,7 +1021,6 @@ export default class playLvl1 extends Scene {
     }
   }
 
-  // ====================================================================
   launch() {
     this.player.chooseDone = true;
     if (this.player.state.pause) {
@@ -1214,47 +1055,12 @@ export default class playLvl1 extends Scene {
   }
 
   // ====================================================================
-  saveGame(player, savestation) {
-    if (player === this.player && !savestation.isOverlap) {
-      savestation.setIsOverlap();
-      this.player.inventory.savedPositionX = this.player.x;
-      this.player.inventory.savedPositionY = this.player.y;
-      this.player.inventory.map = 'map4';
-      const s = JSON.stringify(this.player.inventory);
-      localStorage.setItem('k438b', s);
-      this.sound.play('melo');
-      this.msgText = this.add.bitmapText(this.cameras.main.worldView.x + 200, this.cameras.main.worldView.y + 128, 'atomic', 'Game Saved', 30, 1)
-        .setOrigin(0.5, 0.5)
-        .setAlpha(1)
-        .setDepth(110);
-      this.countTime();
-      this.time.addEvent({
-        delay: 1000,
-        callback: () => {
-          this.msgText.setAlpha(0);
-        },
-      });
-    }
-  }
+  
 
   // ====================================================================
-  loadGame() {
-    const l = localStorage.getItem('k438b');
-    this.player.inventory = JSON.parse(l);
-    this.player.x = this.player.inventory.savedPositionX;
-    this.player.y = this.player.inventory.savedPositionY;
-    this.startRoom(this.player.inventory.map);
-  }
+  
 
-  // ====================================================================
-  shakeCamera(e) {
-    this.cameras.main.shake(e, 0.005);
-  }
-
-  // ====================================================================
-  flashCamera() {
-    this.cameras.main.flash(1000);
-  }
+  
 
   // ====================================================================
   playerIsHit(elm) {
@@ -1328,6 +1134,65 @@ export default class playLvl1 extends Scene {
     this.events.emit('setHealth', { life: this.player.inventory.life }); // set health dashboard scene
   }
 
+  playerOnSpikes(int) {
+    if (!this.playerHurt) {
+      this.playerHurt = true; // flag
+      this.player.state.runSpeed = 285;
+      this.sound.play('playerHit');
+      this.player.inventory.life -= int;
+      this.playerFlashTween = this.tweens.add({
+        targets: this.player,
+        ease: 'Sine.easeInOut',
+        duration: 200,
+        delay: 0,
+        repeat: 5,
+        yoyo: true,
+        alpha: {
+          getStart: () => 0,
+          getEnd: () => 1,
+        },
+        onComplete: () => {
+          this.player.alpha = 1;
+          this.playerHurt = false;
+          // this.player.animate('stand');
+        },
+      });
+      // if player is dead, launch deadth sequence
+      if (this.player.inventory.life <= 0) {
+        this.player.state.dead = true;
+        this.playerDead = true;
+        this.physics.pause();
+        this.input.enabled = false;
+        this.player.anims.pause(this.player.anims.currentFrame);
+        this.playerFlashTween.stop();
+        this.player.inventory.life = 0;
+        this.player.setTintFill(0xFFFFFF);
+        this.player.setDepth(2000);
+
+        this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel');
+        this.round.setOrigin(0.5, 0.5);
+        this.round.setDepth(1000);
+        this.round.displayWidth = 2;
+        this.round.displayHeight = 2;
+        this.sound.play('playerDead', { volume: 0.2 });
+
+        this.tween = this.tweens.add({
+          targets: this.round,
+          ease: 'Sine.easeInOut',
+          scaleX: 1,
+          scaleY: 1,
+          duration: 2500,
+          delay: 800,
+          onComplete: () => {
+            this.input.enabled = true;
+            this.playerIsDead();
+          },
+        });
+      }
+      this.events.emit('setHealth', { life: this.player.inventory.life }); // set health dashboard scene
+    }
+  }
+
   // ====================================================================
   playerIsDead() {
     let d = localStorage.getItem('d');
@@ -1347,9 +1212,7 @@ export default class playLvl1 extends Scene {
     this.scene.start('gameOver');
   }
 
-  countTime() {
-    this.firstTimestamp = countTime(this.firstTimestamp);
-  }
+  
 
   // ====================================================================
   enemyIsHit(bull, elm) {
@@ -1615,265 +1478,37 @@ export default class playLvl1 extends Scene {
     });
   }
 
-  addColliders() {
-    this.solLayer.setCollisionByProperty({ collides: true });
-
-    this.physics.add.collider(this.player, this.solLayer, null);
-    // this.physics.add.collider(this.doorGroup, this.player, null);
-    this.physics.add.collider(this.enemyGroup, this.solLayer, null);
-    this.physics.add.collider(this.enemyGroup, this.doorGroup, (e, d) => { this[e.name].checkCollision(d); }, null, this);
-    this.physics.add.collider(this.lavaGroup, this.solLayer, null);
-    this.physics.add.collider([this.player.bullets, this.player.swells], this.solLayer, this.player.bulletKill, null, this.player);
-    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player);
-    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player);
-    // this.physics.add.collider([this.player.bullets, this.player.swells], this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
-    // this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
-    this.physics.add.collider([this.player.bullets, this.player.missiles, this.player.lasers], this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
-    this.physics.add.collider(this.elevatorGroup, this.player, elm => this.handleElevator(elm), null, this);
-    this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
-    this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
-    this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
-    this.physics.add.overlap(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
-    this.physics.add.overlap([
-      this.player.bullets,
-      this.player.swells,
-      this.player.missiles,
-      this.player.lasers], this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
-
-    this.physics.add.collider(this.player, this.doorGroup, (player, door) => this.changeRoom(player, door), null, this);
-  }
-
-  addLayers() {
-    this.solLayer = this.map.createDynamicLayer('collideGround', this.tileset, 0, 0)
-      .setDepth(11).setPipeline('Light2D');
-    this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0)
-      .setDepth(4);
-    this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0)
-      .setDepth(5);
-    this.middleLayer2 = this.map.createDynamicLayer('middle2', this.tileset, 0, 0)
-      .setDepth(10).setPipeline('Light2D');
-    this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0)
-      .setDepth(98);
-    this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0)
-      .setDepth(99);
-    this.normalLayer = this.map.createDynamicLayer('normalLayer', this.tileset, 0, 0)
-      .setDepth(100);
-    this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0)
-      .setDepth(106).setPipeline('Light2D');
-
-    const debugGraphics = this.add.graphics().setAlpha(0.75);
-    this.solLayer.renderDebug(debugGraphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
-    });
-  }
-
-  addPowerUp() {
-    this.map.objects[0].objects.forEach((element) => {
-      if (this.player.inventory.powerUp[element.properties.id] === 0) {
-        this[element.name] = new PowerUp(this, element.x, element.y - 16, {
-          key: element.properties.key,
-          name: element.properties.name,
-          ability: element.properties.ability,
-          text: element.properties.text,
-          id: element.properties.id,
-        });
-        this[element.name].setDisplayOrigin(0, 0).animate(element.properties.powerup, true);
-        this[element.name].body.setSize(16, 16).setAllowGravity(false);
-        this.powerups.push(this[element.name]);
-      }
-    });
-  }
-
-  addDoors() {
-    this.map.objects[8].objects.forEach((element) => {
-      if (element.properties.side === 'right') {
-        this[element.name] = new Doors(this, element.x + 3, element.y + 9, {
-          key: element.properties.key,
-          name: element.name,
-          side: element.properties.side,
-          playerX: element.properties.playerX,
-          playerY: element.properties.playerY,
-          destination: element.properties.destination,
-          openWith: element.properties.openWith,
-        });
-        this[element.name].body.setSize(10, 47);
-        // add door light
-        this.lights.addLight(element.x + 3, element.y + 9, 64, 0xEEBB22, 1);
-      }
-      if (element.properties.side === 'left') {
-        this[element.name] = new Doors(this, element.x + 13, element.y + 9, {
-          key: element.properties.key,
-          name: element.name,
-          side: element.properties.side,
-          playerX: element.properties.playerX,
-          playerY: element.properties.playerY,
-          destination: element.properties.destination,
-          openWith: element.properties.openWith,
-        });
-        this[element.name].flipX = true;
-        this[element.name].body.setSize(10, 47);
-        // add door light
-        this.lights.addLight(element.x + 13, element.y + 9, 64, 0xEEBB22, 1);
-      }
-      this.doorGroup.push(this[element.name]);
-    });
-  }
-
-  createElevators() {
-    this.map.objects[2].objects.forEach((element) => {
-      if (this.player.y < element.properties.up * 16) {
-        this[element.name] = new Elevators(this, element.x + 24, element.properties.up * 16 + 7, {
-          name: element.name,
-          key: element.properties.key,
-          up: element.properties.up,
-          down: element.properties.down,
-          position: 'up',
-        });
-      } else {
-        this[element.name] = new Elevators(this, element.x + 24, element.properties.down * 16 + 7, {
-          name: element.name,
-          key: element.properties.key,
-          up: element.properties.up,
-          down: element.properties.down,
-          position: 'down',
-        });
-      }
-      this.elevatorGroup.push(this[element.name]);
-    });
-  }
-
-  handleElevator(elm) {
-    if (this.player.body.touching.down && this.player.keys.down.isDown && elm.state.position === 'up') {
-      elm.handleElevator();
-    }
-    if (this.player.body.touching.down && this.player.keys.up.isDown && elm.state.position === 'down') {
-      elm.handleElevator();
-    }
-  }
-
-  addEnemies() {
-    // the crabs
-    this.map.objects[1].objects.forEach((element) => {
-      this[element.name] = new Crabes(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        name: element.name,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this[element.name].setPipeline('Light2D');
-      this[element.name].animate(element.properties.key, true);
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the wasps
-    this.map.objects[3].objects.forEach((element) => {
-      this[element.name] = new Guepes(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        name: element.name,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this[element.name].animate(element.properties.key, true);
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the jumpers
-    this.map.objects[4].objects.forEach((element) => {
-      this[element.name] = new Jumpers(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        name: element.name,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this.enemyGroup.push(this[element.name]);
-    });
-    // the octopus
-    this.map.objects[9].objects.forEach((element) => {
-      this[element.name] = new Octopus(this, element.x, element.y - 16, {
-        key: element.properties.key,
-        name: element.name,
-        life: element.properties.life,
-        damage: element.properties.damage,
-      });
-      this.enemyGroup.push(this[element.name]);
-    });
-  }
-
-  addLava() {
-    // lava
-    this.map.objects[7].objects.forEach((element) => {
-      this[element.name] = new Lava(this, element.x, element.y, {
-        key: element.properties.key,
-      });
-      this[element.name].animate(element.properties.key, true);
-      this[element.name].setDepth(11).setPipeline('Light2D');
-      this.lavaGroup.push(this[element.name]);
-    });
-
-    // lava fall, same group as lava
-    this.map.objects[6].objects.forEach((element) => {
-      this[element.name] = new Lava(this, element.x + 16, element.y - 8, {
-        key: element.properties.key,
-      });
-      this[element.name].setDisplaySize(32, 32).setDepth(10).setPipeline('Light2D');
-      this[element.name].animate(element.properties.key, true);
-      this.lavaGroup.push(this[element.name]);
-    });
-
-    // fireballs, same group as lava
-    this.map.objects[10].objects.forEach((element) => {
-      this[element.name] = new FireBalls(this, element.x + 16, element.y - 8, {
-        key: element.properties.key,
-      });
-      this[element.name].setPipeline('Light2D').animate(element.properties.key, true);
-      this.lavaGroup.push(this[element.name]);
-    });
-  }
-
-  addWaterFall() {
-    this.map.objects[5].objects.forEach((element) => {
-      this[element.name] = new WaterFall(this, element.x + 8, element.y - 8, {
-        key: element.properties.key,
-      });
-      this[element.name].setPipeline('Light2D').animate(element.properties.key, true);
-    });
-  }
-
-  addSavestation() {
-    if (this.map.objects[12]) {
-      this.map.objects[12].objects.forEach((element) => {
-        this[element.name] = new SaveStation(this, element.x + 16, element.y + 6, {
-          key: element.properties.key,
-          destination: element.properties.destination,
-        });
-        this[element.name].animate(element.properties.key, true);
-        this.saveStationGroup.push(this[element.name]);
-        this.physics.add.overlap(this.player, this[element.name], (player, savestation) => this.saveGame(player, savestation), null, this.player);
-        this.lights.addLight(element.x, element.y, 256, 0x2C928A, 0.8);
-      });
-    }
-  }
-
   // ====================================================================
+  // LOAD ROOM
+  loadGame() {
+    const l = localStorage.getItem('k438b');
+    this.player.inventory = JSON.parse(l);
+    this.player.x = this.player.inventory.savedPositionX;
+    this.player.y = this.player.inventory.savedPositionY;
+    this.startRoom(this.player.inventory.map);
+  }
 
-  openDoor(d, miss) {
-    if (d.state.openWith === 'any') {
-      d.openDoor();
-      miss.destroy();
-      return;
+  saveGame(player, savestation) {
+    if (player === this.player && !savestation.isOverlap) {
+      savestation.setIsOverlap();
+      this.player.inventory.savedPositionX = this.player.x;
+      this.player.inventory.savedPositionY = this.player.y;
+      this.player.inventory.map = savestation.state.destination;
+      const s = JSON.stringify(this.player.inventory);
+      localStorage.setItem('k438b', s);
+      this.sound.play('melo');
+      this.msgText = this.add.bitmapText(this.cameras.main.worldView.x + 200, this.cameras.main.worldView.y + 128, 'atomic', 'Game Saved', 30, 1)
+        .setOrigin(0.5, 0.5)
+        .setAlpha(1)
+        .setDepth(110);
+      this.countTime();
+      this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          this.msgText.setAlpha(0);
+        },
+      });
     }
-    if (d.state.openWith === 'missile' && miss.texture.key === 'missile') {
-      d.openDoor();
-      miss.destroy();
-      return;
-    }
-    if (d.state.openWith === 'laser' && miss.texture.key === 'laser') {
-      d.openDoor();
-      miss.destroy();
-      return;
-    }
-    miss.destroy();
-    this.sound.play('doorLocked', { volume: 0.5, rate: 0.5 });
   }
 
   startRoom(room) {
@@ -1927,6 +1562,12 @@ export default class playLvl1 extends Scene {
     this.giveLifeGroup.forEach(e => e.destroy());
     this.powerups.forEach(e => e.destroy());
     this.powerups = [];
+    this.pathGroup.forEach(e => {
+      console.log(e)
+      e.destroy()
+      e = null;
+    });
+    this.pathGroup = [];
     this.enemyGroup.forEach(e => e.destroy());
     this.enemyGroup = [];
     this.elevatorGroup.forEach(e => e.destroy());
@@ -1947,8 +1588,10 @@ export default class playLvl1 extends Scene {
     this.addLayers();
     this.addSceneLights();
     this.addDoors();
-    // this.addParaBack(this.map.properties.paraBack);
-    // this.addParaMiddle(this.map.properties.paraMiddle);
+    this.addMask();
+    this.addParaBack(this.map.properties.paraBack);
+    this.addParaMiddle(this.map.properties.paraMiddle);
+    this.addPath();
     this.addEnemies();
     this.addLava();
     this.addWaterFall();
@@ -1958,49 +1601,475 @@ export default class playLvl1 extends Scene {
     if (doorP.state.side === 'left') {
       this.player.body.reset(doorP.state.playerX * 16, doorP.state.playerY * 16 + 20);
     } else {
-      this.player.body.reset(doorP.state.playerX * 16, doorP.state.playerY * 16 + 20);
+      this.player.body.reset(doorP.state.playerX * 16 + 16, doorP.state.playerY * 16 + 20);
     }
-    this.createElevators();
+    this.addElevators();
     this.addColliders();
     this.addPowerUp();
+    // launch special functions from the room
+    if (this.map.properties.callFunction && this.map.properties.callFunction.length) {
+      const arr = this.map.properties.callFunction.split(',');
+      arr.forEach(elm => this[elm]());
+    }
     this.playMusic(this.map.properties.music);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
     this.cameras.main.fadeIn(50);
-    console.log('LIGHTCOUNT: ', this.lights.getLightCount())
+  }
+
+  addCrumbleTiles() {
+    const { CrumbleStartX, CrumbleStartY, CrumbleLength } = this.map.properties;
+    this.solLayer.setTileLocationCallback(CrumbleStartX, CrumbleStartY, CrumbleLength, 1, (e, t) => this.handleCrumbleTile(e, t), this);
+  }
+
+  handleCrumbleTile(e, t) {
+    if (e !== this.player) {
+      return;
+    }
+    const { crumbleTimer } = t.properties;
+    this.time.addEvent({
+      delay: crumbleTimer,
+      callback: () => {
+        t.setVisible(false);
+        const t2 = this.solLayer.getTileAt(t.x, t.y + 1);
+        t2.setVisible(false);
+        this.solLayer.setCollision(t2.index, false);
+        this.resetCrumbleTiles(t, t2);
+      },
+    });
+  }
+
+  resetCrumbleTiles(t, t2) {
+    this.time.addEvent({
+      delay: 10000,
+      callback: () => {
+        t.setVisible(true);
+        t2.setVisible(true);
+        this.solLayer.setCollision(t2.index, true);
+      },
+    });
   }
 
   // ====================================================================
-  // BOSS 1
-  boss1BattlePrep() {
-    this.boss1started = true;
-    this.solLayer.setTileLocationCallback(78, 77, 1, 3, null);
-    this.boss1wallfront = this.add.image(1912, 1340, 'boss1wallfront')
-      .setDepth(2000)
-      .setVisible(true);
-
-    this.boss1 = new Boss1(this, 1930, 1350, { key: 'boss1run' });
-    this.boss1.animate('boss1run');
-    this.boss1.setAlpha(0);
-    this.enemyGroup.push(this.boss1);
-    this.boss1.body.setVelocity(0, 0)
-      .setEnable(false);
-  }
-
-  boss1Battle() {
-    if (!this.boss1started) {
-      this.boss1BattlePrep();
+  // ADD ROOM STUFF
+  addPath() {
+    const layerArray = this.checkObjectsLayerIndex('path');
+    if (!layerArray || layerArray.objects.length === 0) {
+      return;
     }
-    this.solLayer.setTileLocationCallback(109, 86, 3, 3, null);
-    this.boss1.body.setEnable();
-    this.physics.add.collider(this.boss1, this.solLayer, null);
-    this.boss1.setAlpha(1);
-    this.boss1.animate('boss1run');
-    this.boss1.intro = true;
-    this.door7.body.enable = true;
-    this.door7.setAlpha(1);
+    layerArray.objects.forEach((element) => {
+      const poly = element.polyline;
+      const pathOriginX = element.properties.originX;
+      const pathOriginY = element.properties.originY;
+      this.pathCrabs = new Phaser.Curves.Path(pathOriginX + poly[0].x, pathOriginY + poly[0].y);
+      poly.forEach(line => this.pathCrabs.lineTo(line.x + pathOriginX, line.y + pathOriginY));
+      this[`path${element.name}`] = this.add.follower(this.pathCrabs, pathOriginX, pathOriginY, 'blackPixel');
+      this[`path${element.name}`].setVisible(true);
+      this[`path${element.name}`].setTintFill(0xFF0000);
+      this[`path${element.name}`].name = element.name;
+      this[`path${element.name}`].startFollow({
+        duration: element.properties.duration,
+        yoyo: false,
+        repeat: -1,
+        rotateToPath: true,
+        verticalAdjust: false,
+      });
+      this.pathGroup.push(this[`path${element.name}`]);
+      // graphics for debug
+      var graphics = this.add.graphics();
+
+      graphics.lineStyle(1, 0xffffff, 1); //what is 1, , 1
+
+      this.pathCrabs.draw(graphics, 328);﻿ //what is 328
+
+    });
   }
 
+  addColliders() {
+    this.solLayer.setCollisionByProperty({ collides: true });
+    //this.spikeLayer.setCollisionByProperty({ hurt: true });
+    this.physics.add.collider(this.player, this.solLayer, null, (e, t) => {
+      if (t.index === 705 || t.index === 706) {
+        this.playerOnSpikes(20);
+      }
+      return true;
+    }, this);
+    // this.physics.add.collider(this.doorGroup, this.player, null);
+    this.physics.add.collider(this.enemyGroup, this.solLayer, null);
+    this.physics.add.collider(this.enemyGroup, this.doorGroup, (e, d) => { this[e.name].checkCollision(d); }, null, this);
+    this.physics.add.collider(this.lavaGroup, this.solLayer, null);
+    this.physics.add.collider([this.player.bullets, this.player.swells], this.solLayer, this.player.bulletKill, null, this.player);
+    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player);
+    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player);
+    // this.physics.add.collider([this.player.bullets, this.player.swells], this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
+    // this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
+    this.physics.add.collider([this.player.bullets, this.player.missiles, this.player.lasers], this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
+    this.physics.add.collider(this.elevatorGroup, this.player, elm => this.handleElevator(elm), null, this);
+    this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
+    this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
+    this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
+    this.physics.add.overlap(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
+    this.physics.add.overlap([
+      this.player.bullets,
+      this.player.swells,
+      this.player.missiles,
+      this.player.lasers], this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
+
+    this.physics.add.collider(this.player, this.doorGroup, (player, door) => this.changeRoom(player, door), null, this);
+    //this.physics.add.collider(this.player, this.spikeLayer, () => this.playerOnSpikes(20), null, this);
+  }
+
+  addSpikes() {
+    console.log('SPIKES')
+    //this.spikeLayer.setCollisionByProperty({ hurt: true });
+    // this.spikeCollider = this.physics.add.overlap(this.player, this.spikeLayer, () => this.playerOnSpikes(20), (e, t) => {
+    //   if (t.index === 705 || t.index === 706) {
+    //     return true;
+    //   }
+    //   return false;
+    // }, this);
+  }
+
+  addLayers() {
+    this.solLayer = this.map.createDynamicLayer('collideGround', this.tileset, 0, 0)
+      .setDepth(11).setPipeline('Light2D');
+    this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0)
+      .setDepth(4).setPipeline('Light2D');
+    this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0)
+      .setDepth(5).setPipeline('Light2D');
+    this.middleLayer2 = this.map.createDynamicLayer('middle2', this.tileset, 0, 0)
+      .setDepth(10).setPipeline('Light2D');
+    this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0)
+      .setDepth(98).setPipeline('Light2D');
+    this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0)
+      .setDepth(99).setPipeline('Light2D');
+    this.spikeLayer = this.map.createDynamicLayer('spikeLayer', this.tileset, 0, 0)
+      .setDepth(100).setPipeline('Light2D');
+    this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0)
+      .setDepth(106).setPipeline('Light2D');
+  }
+
+  addMask() {
+    // mask for morphing sonar
+    this.mask = this.make.graphics({ fillStyle: { color: 0xffffff }, add: false })
+      .fillCircleShape(new Phaser.Geom.Circle(0, 6, 40));
+
+    this.frontLayer.mask = new Phaser.Display.Masks.BitmapMask(this, this.mask);
+    this.frontLayer.mask.invertAlpha = true;
+  }
+
+  addPowerUp() {
+    const layerArray = this.checkObjectsLayerIndex('powerup');
+    if (!layerArray || layerArray.objects.length === 0) {
+      return;
+    }
+    layerArray.objects.forEach((element) => {
+      if (this.player.inventory.powerUp[element.properties.id] === 0) {
+        this[element.name] = new PowerUp(this, element.x, element.y - 16, {
+          key: element.properties.key,
+          name: element.properties.name,
+          ability: element.properties.ability,
+          text: element.properties.text,
+          id: element.properties.id,
+        });
+        this[element.name].setDisplayOrigin(0, 0).animate(element.properties.powerup, true);
+        this[element.name].body.setSize(16, 16).setAllowGravity(false);
+        this.powerups.push(this[element.name]);
+      }
+    });
+  }
+
+  addDoors() {
+    const layerArray = this.checkObjectsLayerIndex('doors');
+    layerArray.objects.forEach((element) => {
+      if (element.properties.side === 'right') {
+        this[element.name] = new Doors(this, element.x + 3, element.y + 9, {
+          key: element.properties.key,
+          name: element.name,
+          side: element.properties.side,
+          playerX: element.properties.playerX,
+          playerY: element.properties.playerY,
+          destination: element.properties.destination,
+          openWith: element.properties.openWith,
+        });
+        this[element.name].body.setSize(10, 47);
+        // add door light
+        this.lights.addLight(element.x + 3, element.y + 9, 64, 0xEEBB22, 1);
+      }
+      if (element.properties.side === 'left') {
+        this[element.name] = new Doors(this, element.x + 13, element.y + 9, {
+          key: element.properties.key,
+          name: element.name,
+          side: element.properties.side,
+          playerX: element.properties.playerX,
+          playerY: element.properties.playerY,
+          destination: element.properties.destination,
+          openWith: element.properties.openWith,
+        });
+        this[element.name].flipX = true;
+        this[element.name].body.setSize(10, 47);
+        // add door light
+        this.lights.addLight(element.x + 13, element.y + 9, 64, 0xEEBB22, 1);
+      }
+      this.doorGroup.push(this[element.name]);
+    });
+  }
+
+  addSceneLights() {
+    // Clean up existing lights (need more testing and optimization)
+    if (this.lights.lights.length > 0) {
+      this.lights.culledLights.forEach(light => this.lights.removeLight(light));
+      this.lights.lightPool.forEach(light => this.lights.removeLight(light));
+      this.lights.lights.forEach(light => this.lights.removeLight(light));
+      this.lights.forEachLight(elm => this.lights.removeLight(elm));
+    }
+    // enable the light system
+    this.lights.enable();
+    // Player light
+    this.playerLight = this.lights.addLight(this.player.x, this.player.y + 48, 48, 0xFCDECA, 0.4);
+    // add room ambient lights
+    const layerArray = this.checkObjectsLayerIndex('lights');
+    if (layerArray) {
+      layerArray.objects.forEach((element) => {
+        this.lights.addLight(element.x, element.y, element.properties.radius, element.properties.color, element.properties.intensity)
+      });
+    }
+    if (this.map.properties.ambientColor) {
+      this.lights.setAmbientColor(this.map.properties.ambientColor);
+      return;
+    }
+    this.lights.setAmbientColor(0x222222);
+  }
+
+  addElevators() {
+    const layerArray = this.checkObjectsLayerIndex('elevators');
+    if (!layerArray || layerArray.objects.length === 0) {
+      return;
+    }
+    layerArray.objects.forEach((element) => {
+      if (this.player.y < element.properties.up * 16) {
+        this[element.name] = new Elevators(this, element.x + 24, element.properties.up * 16 + 7, {
+          name: element.name,
+          key: element.properties.key,
+          up: element.properties.up,
+          down: element.properties.down,
+          position: 'up',
+        });
+      } else {
+        this[element.name] = new Elevators(this, element.x + 24, element.properties.down * 16 + 7, {
+          name: element.name,
+          key: element.properties.key,
+          up: element.properties.up,
+          down: element.properties.down,
+          position: 'down',
+        });
+      }
+      this.elevatorGroup.push(this[element.name]);
+    });
+  }
+
+  addEnemies() {
+    // the crabs
+    const layerArray = this.checkObjectsLayerIndex('enemies');
+    layerArray.objects.forEach((element) => {
+      this[element.name] = new Crabes(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this[element.name].setPipeline('Light2D');
+      this[element.name].animate(element.properties.key, true);
+      this.enemyGroup.push(this[element.name]);
+      this[element.name].setPosition(element.x, element.y - 16);
+    });
+    console.log(this)
+    // the wasps
+    const layerArray2 = this.checkObjectsLayerIndex('guepes');
+    layerArray2.objects.forEach((element) => {
+      this[element.name] = new Guepes(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this[element.name].animate(element.properties.key, true);
+      this.enemyGroup.push(this[element.name]);
+    });
+    // the jumpers
+    const layerArray3 = this.checkObjectsLayerIndex('jumpers');
+    layerArray3.objects.forEach((element) => {
+      this[element.name] = new Jumpers(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this.enemyGroup.push(this[element.name]);
+    });
+    // the octopus
+    const layerArray4 = this.checkObjectsLayerIndex('octopus');
+    layerArray4.objects.forEach((element) => {
+      this[element.name] = new Octopus(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        name: element.name,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      this.enemyGroup.push(this[element.name]);
+    });
+  }
+
+  addLava() {
+    // lava
+    const layerArray = this.checkObjectsLayerIndex('lava');
+    if (!layerArray || layerArray.objects.length === 0) {
+      return;
+    }
+    layerArray.objects.forEach((element) => {
+      this[element.name] = new Lava(this, element.x, element.y, {
+        key: element.properties.key,
+      });
+      this[element.name].animate(element.properties.key, true);
+      this[element.name].setDepth(11).setPipeline('Light2D');
+      this.lavaGroup.push(this[element.name]);
+    });
+
+    // lava fall, same group as lava
+    const layerArray2 = this.checkObjectsLayerIndex('lavaFall');
+    if (!layerArray2 || layerArray2.objects.length === 0) {
+      return;
+    }
+    layerArray2.objects.forEach((element) => {
+      this[element.name] = new Lava(this, element.x + 16, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].setDisplaySize(32, 32).setDepth(10).setPipeline('Light2D');
+      this[element.name].animate(element.properties.key, true);
+      this.lavaGroup.push(this[element.name]);
+    });
+
+    // fireballs, same group as lava
+    const layerArray3 = this.checkObjectsLayerIndex('fireball');
+    if (!layerArray3 || layerArray3.objects.length === 0) {
+      return;
+    }
+    layerArray3.objects.forEach((element) => {
+      this[element.name] = new FireBalls(this, element.x + 16, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].setPipeline('Light2D').animate(element.properties.key, true);
+      this.lavaGroup.push(this[element.name]);
+    });
+  }
+
+  addWaterFall() {
+    const layerArray = this.checkObjectsLayerIndex('waterFall');
+    if (!layerArray || layerArray.objects.length === 0) {
+      return;
+    }
+    layerArray.objects.forEach((element) => {
+      this[element.name] = new WaterFall(this, element.x + 8, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].setPipeline('Light2D').animate(element.properties.key, true);
+    });
+  }
+
+  addSavestation() {
+    const layerArray = this.checkObjectsLayerIndex('savestation');
+    if (!layerArray || layerArray.objects.length === 0) {
+      return;
+    }
+    layerArray.objects.forEach((element) => {
+      this[element.name] = new SaveStation(this, element.x + 16, element.y + 6, {
+        key: element.properties.key,
+        destination: element.properties.destination,
+      });
+      this[element.name].animate(element.properties.key, true);
+      this.saveStationGroup.push(this[element.name]);
+      this.physics.add.overlap(this.player, this[element.name], (player, savestation) => this.saveGame(player, savestation), null, this.player);
+    });
+  }
+
+  addParaBack(image) {
+    this.para_back = this.add.image(0, 0, image)
+      .setDepth(0)
+      .setScrollFactor(0.2)
+      .setOrigin(0, 0)
+      .setDisplaySize(800, 512);
+  }
+
+  addParaMiddle(image) {
+    this.para_middle = this.add.image(0, 0, image)
+      .setDepth(3)
+      .setScrollFactor(0.5)
+      .setOrigin(0, 0)
+      .setDisplaySize(2048, 1024);
+  }
+
+  // ====================================================================
+  // HANDLE ROOM ELEMENTS
+  openDoor(d, miss) {
+    if (d.state.openWith === 'any') {
+      d.openDoor();
+      miss.destroy();
+      return;
+    }
+    if (d.state.openWith === 'missile' && miss.texture.key === 'missile') {
+      d.openDoor();
+      miss.destroy();
+      return;
+    }
+    if (d.state.openWith === 'laser' && miss.texture.key === 'laser') {
+      d.openDoor();
+      miss.destroy();
+      return;
+    }
+    miss.destroy();
+    this.sound.play('doorLocked', { volume: 0.5, rate: 0.5 });
+  }
+
+  handleElevator(elm) {
+    if (this.player.body.touching.down && this.player.keys.down.isDown && elm.state.position === 'up') {
+      elm.handleElevator();
+    }
+    if (this.player.body.touching.down && this.player.keys.up.isDown && elm.state.position === 'down') {
+      elm.handleElevator();
+    }
+  }
+
+  noEnemyWithoutMorphing() {
+    if (this.player.inventory.morphing) return;
+    this.enemyGroup.forEach(enemy => enemy.destroy());
+  }
+
+  // ====================================================================
+  // CAMERA EFFECTS
+  shakeCamera(e) {
+    this.cameras.main.shake(e, 0.005);
+  }
+
+  flashCamera() {
+    this.cameras.main.flash(1000);
+  }
+  
+
+  // ====================================================================
+  // HELPERS
+  checkObjectsLayerIndex(layerName) {
+    const arr = this.map.objects.filter(elm => elm.name === layerName);
+    if (!arr.length) {
+      return null;
+    }
+    return arr[0];
+  }
+
+  countTime() {
+    this.firstTimestamp = countTime(this.firstTimestamp);
+  }
+
+  // ====================================================================
   transmission(txt) {
     let count = 0;
     this.modalText = this.add.bitmapText(this.player.x, this.player.y - 480, 'atomic', '', 6, 1)
@@ -2027,61 +2096,6 @@ export default class playLvl1 extends Scene {
       delay: 12000,
       callback: () => {
         this.modalText.destroy();
-      },
-    });
-  }
-
-  bossFinalBattlePrep() {
-    this.bossFinalReady = true;
-    this.bossFinal = new BossFinal(this, 1250, 2960, { key: 'bossFinal' });
-    this.bossFinal.animate('bossFinalIntro');
-    this.physics.add.collider(this.bossFinal, this.solLayer, null);
-    this.physics.add.overlap(this.bossFinal, this.player, elm => this.playerIsHit(elm), null, this);
-    this.physics.add.overlap([
-      this.player.bullets,
-      this.player.swells,
-      this.player.missiles,
-      this.player.lasers,
-    ], this.bossFinal, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
-    this.bossFinal.flames = this.physics.add.group({
-      defaultKey: 'fireball',
-      maxSize: 900,
-      allowGravity: false,
-      createIfNull: true,
-    });
-    this.physics.add.collider(this.bossFinal.flames, this.solLayer, (elm) => { this.bossFinal.stopFlame(elm); }, null);
-    this.physics.add.overlap(this.bossFinal.flames, this.player, () => this.player.handleLava(), null, this.player);
-    this.boss1dead = this.add.image(925, 3010, 'boss1dead').setDepth(100);
-    this.boss1dead.flipX = true;
-    this.solLayer.setTileLocationCallback(59, 188, 1, 6, (e) => {
-      if (e === this.player && !this.player.inventory.bossFinal && !this.bossFinalstarted) {
-        this.bossFinalBattleStart();
-      }
-    }, this);
-    this.solLayer.setTileLocationCallback(70, 127, 8, 1, null);
-    this.solLayer.setTileLocationCallback(1, 188, 116, 1, null);
-  }
-
-  bossFinalBattleStart() {
-    this.bossFinal.playBossMusic();
-    this.bossFinal.playRoar('cri1');
-    this.time.addEvent({
-      delay: 700,
-      callback: () => {
-        this.bossFinal.animate('bossFinalAttack');
-        if (this.bossFinal.y < 2810) {
-          this.bossFinal.body.velocity.y = 0;
-        } else if (this.bossFinal.y > 2900) {
-          this.bossFinal.body.velocity.y = -300;
-        } else {
-          this.bossFinal.body.velocity.y = 0;
-        }
-      },
-    });
-    this.time.addEvent({
-      delay: 3000,
-      callback: () => {
-        this.bossFinalstarted = true;
       },
     });
   }

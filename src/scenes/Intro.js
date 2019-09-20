@@ -22,7 +22,7 @@ export default class Intro extends Scene {
 
     this.text = 'New transmision-A new planet has been discovered-K438 B-We need information about-living organisms and potential threats-More information on site-Good luck!!';
     this.count = 0;
-    this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1)
+    this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 10, 1)
       .setOrigin(0.5, 0.5);
 
     this.time.addEvent({

@@ -22,17 +22,17 @@ export default class bootGame extends Scene {
 
     this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
 
-    this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 160, 'atomic', ' K-438 B ', 70, 1)
+    this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 100, 'atomic', ' K-438 B ', 50, 1)
       .setOrigin(0.5, 0.5)
       .setTint(0xFF3B00);
 
-    this.title2 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 100, 'atomic', ' Mission : exploration ', 25, 1)
+    this.title2 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 60, 'atomic', ' Mission : exploration ', 25, 1)
       .setOrigin(0.5, 0.5)
       .setTint(0xFF3B00);
 
     this.text = 'A Dinan Magel adventure';
     this.count = 0;
-    this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1)
+    this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 30, 'atomic', '', 20, 1)
       .setOrigin(0.5, 0.5);
 
     this.time.addEvent({
