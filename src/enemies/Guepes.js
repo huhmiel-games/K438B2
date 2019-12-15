@@ -75,6 +75,28 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
     this.state.life = this.state.life - e;
   }
 
+  explode(bullet) {
+    const arr = [];
+    for (let i = 0; i < 30; i += 1) {
+      arr.push(i.toString());
+    }
+    // const bulletSpeed = bullet.x !== 0 ? bullet.x / 2 : bullet.y / 2;
+    // this.scene.particles = null;
+    this.scene.particles = this.scene.add.particles('explodedCrab');
+    this.scene.emitter = this.scene.particles.createEmitter({
+      angle: { min: -30, max: -150 },
+      speed: { min: 200, max: 300 },
+      frame: arr,
+      quantity: 16,
+      lifespan: 3000,
+      alpha: 1,
+      gravityY: 300,
+      on: false,
+      frequency: -1,
+    });
+    this.scene.particles.emitParticleAt(this.x, this.y).setDepth(2000);
+  }
+
   checkCollision(d) {
     if (d.type === 'Sprite') {
       this.playSound();

@@ -27,7 +27,7 @@ const config = {
     default: 'arcade',
     arcade: {
       tileBias: 20,
-      gravity: { y: 0 }, //default 100
+      gravity: { y: 0 }, // default 100
       debug: true,
       debugShowBody: true,
       debugShowStaticBody: true,
@@ -36,4 +36,5 @@ const config = {
   scene: [Huhmiel, bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, MapScene, endGame, gameOver],
 };
 
+// eslint-disable-next-line no-unused-vars
 const game = new Phaser.Game(config);

@@ -40,18 +40,19 @@ export default class Doors extends Phaser.GameObjects.Sprite {
   }
 
   openDoor() {
-    if (!this.isOpen) {
-      this.isOpen = true;
-      this.scene.sound.play('door', { rate: 2 });
-      this.anims.play(`open${this.state.key}`, true).on('animationcomplete', () => {
-        this.setAlpha(0);
-        if (this.state.side === 'left') {
-          this.x = this.x + 32;
-        } else if (this.state.side === 'right') {
-          this.x = this.x - 32;
-        }
-      });
+    if (this.isOpen) {
+      return;
     }
+    this.isOpen = true;
+    this.scene.sound.play('door', { rate: 2 });
+    this.anims.play(`open${this.state.key}`, true).on('animationcomplete', () => {
+      this.setAlpha(0.1);
+      if (this.state.side === 'left') {
+        this.x = this.x + 32;
+      } else if (this.state.side === 'right') {
+        this.x = this.x - 32;
+      }
+    });
   }
 
   setDoorPosition(x, y) {

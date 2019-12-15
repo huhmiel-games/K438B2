@@ -13,6 +13,7 @@ export default class PowerUp extends Phaser.GameObjects.Sprite {
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = false;
+    this.setPipeline('Light2D');
   }
 
   preUpdate(time, delta) {

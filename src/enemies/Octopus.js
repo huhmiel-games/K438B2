@@ -10,26 +10,32 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
       giveLife: config.life / 10,
     };
 
-    this.setDepth(97).setScale(2, 2);
+    this.setDepth(97)
+      .setPipeline('Light2D');
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.setAllowGravity().setGravityY(100).setSize(12, 22).setOffset(8, 8);
+    this.body
+      .setAllowGravity()
+      .setGravityY(100)
+      .setSize(12, 22)
+      .setOffset(8, 8);
     this.flag = false;
     this.getFired = false;
     this.lastAnim = null;
+    console.log(this)
   }
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
     let animationName;
     if (this.scene.player.onWater) {
-      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 200) {
+      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 100) {
         this.attack();
       } else {
-        this.goHome();
+        this.goHome(time);
       }
     } else {
-      this.goHome();
+      this.goHome(time);
     }
 
     if (!this.body.blocked.down) {
@@ -50,14 +56,11 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
     }
   }
 
-  goHome() {
-    const dx = 144 - this.x;
-    const dy = 858 - this.y;
-    const angle = Math.atan2(dy, dx);
-    const speed = 100;
+  goHome(time) {
+    const speed = 50;
     this.body.setVelocity(
-      Math.cos(angle) * speed,
-      Math.sin(angle) * speed,
+      0,
+      Math.sin(time * 0.0005) * speed,
     );
   }
 
@@ -65,14 +68,11 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
     const dx = this.scene.player.x - this.x;
     const dy = this.scene.player.y - this.y;
     const angle = Math.atan2(dy, dx);
-    const speed = 100;
+    const speed = 90;
     this.body.setVelocity(
       Math.cos(angle) * speed,
       Math.sin(angle) * speed,
     );
-    if (this.body.blocked.right) {
-      this.body.velocity.y -= 100;
-    }
   }
 
   animate(str) {
@@ -81,5 +81,30 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
 
   looseLife(e) {
     this.state.life = this.state.life - e;
+  }
+
+  explode(bullet) {
+    const arr = [];
+    for (let i = 0; i < 30; i += 1) {
+      arr.push(i.toString());
+    }
+    // const bulletSpeed = bullet.x !== 0 ? bullet.x / 2 : bullet.y / 2;
+    // this.scene.particles = null;
+    this.scene.crabParticles = this.scene.add.particles('explodedCrab');
+    this.scene.crabEmitter = this.scene.crabParticles.createEmitter({
+      angle: { min: -30, max: -150 },
+      speed: { min: 200, max: 300 },
+      frame: arr,
+      quantity: 16,
+      lifespan: 3000,
+      alpha: 1,
+      rotate: { start: 0, end: 3, ease: 'Linear' },
+      gravityY: 300,
+      on: false,
+    });
+    this.scene.crabParticles
+      .emitParticleAt(this.x, this.y)
+      .setDepth(100)
+      .setPipeline('Light2D');
   }
 }

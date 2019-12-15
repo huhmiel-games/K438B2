@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
-import background from '../assets/menuBackgound3.png';
+import background from '../assets/menuBackgound4.png';
 import bip2 from '../assets/sounds/piou.ogg';
 import ambient2 from '../assets/music/ambient2.ogg';
 
@@ -22,30 +22,31 @@ export default class bootGame extends Scene {
 
     this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
 
-    this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 100, 'atomic', ' K-438 B ', 50, 1)
+    // this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 100, 'atomic', ' K-438 B ', 50, 1)
+    //   .setOrigin(0.5, 0.5)
+    //   .setTint(0xFF3B00);
+
+    // this.title2 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 60, 'atomic', ' Mission : exploration ', 25, 1)
+    //   .setOrigin(0.5, 0.5)
+    //   .setTint(0xFF3B00);
+
+    // this.text = 'A Dinan Magel adventure';
+    // this.count = 0;
+    // this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 30, 'atomic', '', 20, 1)
+    //   .setOrigin(0.5, 0.5);
+
+    // this.time.addEvent({
+    //   delay: 50,
+    //   repeat: this.text.length - 1,
+    //   callback: () => {
+    //     this.title3.text += this.text[this.count];
+    //     this.count += 1;
+    //   },
+    // });
+
+    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 + 50, 'atomic', 'press any key to start', 14, 1)
       .setOrigin(0.5, 0.5)
-      .setTint(0xFF3B00);
-
-    this.title2 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 60, 'atomic', ' Mission : exploration ', 25, 1)
-      .setOrigin(0.5, 0.5)
-      .setTint(0xFF3B00);
-
-    this.text = 'A Dinan Magel adventure';
-    this.count = 0;
-    this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 30, 'atomic', '', 20, 1)
-      .setOrigin(0.5, 0.5);
-
-    this.time.addEvent({
-      delay: 50,
-      repeat: this.text.length - 1,
-      callback: () => {
-        this.title3.text += this.text[this.count];
-        this.count += 1;
-      },
-    });
-
-    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 + 50, 'atomic', 'press any key to start', 24, 1)
-      .setOrigin(0.5, 0.5);
+      .setTint(0x7C13F6);
 
     this.input.keyboard.once('keydown', () => {
       this.sound.play('bip2', { volume: 0.1 });

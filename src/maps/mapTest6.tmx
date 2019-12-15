@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="25" height="64" tilewidth="16" tileheight="16" nextobjectid="545">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="25" height="64" tilewidth="16" tileheight="16" nextobjectid="547">
  <properties>
   <property name="music" value="ambient3"/>
   <property name="paraBack" value="para_back"/>
@@ -1617,11 +1617,11 @@
   </object>
   <object id="541" name="door2" gid="182" x="32" y="976" width="16" height="16">
    <properties>
-    <property name="destination" value="map7"/>
-    <property name="key" value="doorGreen"/>
-    <property name="openWith" value="missile"/>
-    <property name="playerX" type="int" value="27"/>
-    <property name="playerY" type="int" value="5"/>
+    <property name="destination" value="map15"/>
+    <property name="key" value="doorBlue"/>
+    <property name="openWith" value="any"/>
+    <property name="playerX" type="int" value="21"/>
+    <property name="playerY" type="int" value="8"/>
     <property name="side" value="right"/>
    </properties>
   </object>
@@ -1641,11 +1641,25 @@
  <objectgroup name="rhino"/>
  <objectgroup name="savestation"/>
  <objectgroup name="lights">
-  <object id="543" name="ambient" gid="1" x="288" y="64" width="16" height="16">
+  <object id="543" name="ambient" gid="1" x="192" y="64" width="16" height="16">
    <properties>
-    <property name="color" value="0xDDDDDD"/>
+    <property name="color" value="0xFCDEC4"/>
     <property name="intensity" type="int" value="1"/>
-    <property name="radius" type="int" value="1024"/>
+    <property name="radius" type="int" value="512"/>
+   </properties>
+  </object>
+  <object id="545" name="ambient" gid="1" x="208" y="384" width="16" height="16">
+   <properties>
+    <property name="color" value="0xFCDEC4"/>
+    <property name="intensity" type="int" value="1"/>
+    <property name="radius" type="int" value="512"/>
+   </properties>
+  </object>
+  <object id="546" name="ambient" gid="1" x="208" y="752" width="16" height="16">
+   <properties>
+    <property name="color" value="0xFCDEC4"/>
+    <property name="intensity" type="int" value="1"/>
+    <property name="radius" type="int" value="512"/>
    </properties>
   </object>
  </objectgroup>

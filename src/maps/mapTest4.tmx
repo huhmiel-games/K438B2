@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="25" height="16" tilewidth="16" tileheight="16" nextobjectid="543">
  <properties>
+  <property name="callFunction" value=""/>
   <property name="music" value="ambient3"/>
-  <property name="paraBack" value="para_back"/>
-  <property name="paraMiddle" value="para_middle"/>
+  <property name="paraBack" value=""/>
+  <property name="paraMiddle" value="bgSaveStation"/>
  </properties>
  <tileset firstgid="1" name="tileground" tilewidth="16" tileheight="16" tilecount="4096" columns="64">
   <image source="../assets/environment/layers/tilesets.png" width="1024" height="1024"/>

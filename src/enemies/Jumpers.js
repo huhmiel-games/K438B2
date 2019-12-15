@@ -14,7 +14,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     };
     this.name = config.name;
     this.lastAnim = null;
-    this.setDepth(101).setScale(2, 2);
+    this.setDepth(101); // .setScale(2, 2);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;
@@ -49,7 +49,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     if (!this.flag) {
       this.flag = true;
       this.delay = Phaser.Math.Between(0, 300);
-      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 200 || this.state.life < 400) {
+      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 200) {
         this.side = this.scene.player.x - this.x;
       } else {
         this.side = Phaser.Math.Between(-100, 100);
@@ -78,5 +78,38 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
   looseLife(e) {
     this.scene.sound.play('enemyHit');
     this.state.life = this.state.life - e;
+  }
+
+  explode(bullet) {
+    console.log(this, bullet)
+    let arr = [];
+    for (let i = 0; i < 30; i+=1) {
+      arr.push(i.toString())
+    }
+    const bulletSpeed = bullet.x !== 0 ? bullet.x / 2 : bullet.y / 2;
+    //this.scene.particles = null;
+    this.scene.crabParticles = this.scene.add.particles('explodedCrab');
+    this.scene.crabEmitter = this.scene.crabParticles.createEmitter({
+      angle: { min: -30, max: -150 },
+      speed: { min: 200, max: bulletSpeed },
+      frame: arr,
+      quantity: 16,
+      lifespan: 3000,
+      alpha: 1,
+      rotate: { start: 0, end: 3, ease: 'Linear' },
+      gravityY: 300,
+      on: false,
+    });
+    this.scene.crabParticles.emitParticleAt(this.x, this.y).setDepth(2000).setPipeline('Light2D');
+  }
+
+  checkCollision(d) {
+    if (d.type === 'Sprite') {
+      if (this.state.directionX > 0) {
+        this.state.directionX = -100;
+      } else {
+        this.state.directionX = 100;
+      }
+    }
   }
 }
